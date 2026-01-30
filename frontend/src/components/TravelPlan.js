@@ -18,7 +18,7 @@ const TravelPlan = ({ plan }) => {
           <strong>Travel Style:</strong> {tripOverview.travelStyle}
         </p>
         <p>
-          <strong>Total Budget:</strong> ${tripOverview.totalBudget}
+          <strong>Total Budget:</strong> ₹{tripOverview.totalBudget}
         </p>
       </div>
 
@@ -41,7 +41,7 @@ const TravelPlan = ({ plan }) => {
         </div>
         <div className="budget-item">
           <h4>Activities</h4>
-          <p>{budgetBreakdown.activities.amount}</p>
+          <p>₹{budgetBreakdown.activities.amount}</p>
           <small>{budgetBreakdown.activities.description}</small>
         </div>
         <div className="budget-item">
