@@ -1,0 +1,272 @@
+.day-card {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  transition: all 0.3s ease;
+}
+
+.day-card.selected {
+  box-shadow: 0 4px 20px rgba(0, 123, 255, 0.15);
+  border: 1px solid #007bff;
+}
+
+.day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.day-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.weather-info {
+  background: #e3f2fd;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #1976d2;
+}
+
+.day-notes {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 25px;
+  border-left: 4px solid #007bff;
+}
+
+.day-notes p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Activities Section */
+.activities-section,
+.meals-section,
+.accommodation-section,
+.transportation-section {
+  margin-bottom: 30px;
+}
+
+.activities-section h4,
+.meals-section h4,
+.accommodation-section h4,
+.transportation-section h4 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 1.2rem;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.activities-list,
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.activity-item,
+.meal-item {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.activity-item:hover,
+.meal-item:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.activity-header,
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.activity-icon {
+  font-size: 1.2rem;
+}
+
+.activity-time,
+.meal-time {
+  font-weight: 600;
+  color: #007bff;
+  background: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+.activity-cost,
+.meal-cost {
+  background: #28a745;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.activity-content h5,
+.meal-content h5 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.activity-content p,
+.meal-content p {
+  margin: 0 0 10px 0;
+  color: #666;
+  line-height: 1.4;
+}
+
+.activity-duration,
+.cuisine-type {
+  background: #6c757d;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+/* Accommodation Section */
+.accommodation-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.accommodation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.accommodation-header h5 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.accommodation-type {
+  background: #007bff;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.accommodation-details p {
+  margin: 8px 0;
+  color: #666;
+}
+
+.location {
+  font-weight: 500;
+}
+
+.rating {
+  color: #ffc107;
+  font-size: 1.1rem;
+}
+
+.rating span {
+  color: #666;
+  font-size: 0.9rem;
+  margin-left: 5px;
+}
+
+.cost {
+  font-weight: 600;
+  color: #28a745;
+}
+
+.accommodation-notes {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.accommodation-notes p {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+}
+
+/* Transportation Section */
+.transportation-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.transportation-info p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.transportation-info strong {
+  color: #495057;
+}
+
+.transport-notes {
+  background: #e9ecef;
+  padding: 12px;
+  border-radius: 6px;
+  font-style: italic;
+  margin-top: 10px !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .day-card {
+    padding: 20px;
+  }
+
+  .day-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .day-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .activity-header,
+  .meal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .activity-item,
+  .meal-item,
+  .accommodation-card,
+  .transportation-info {
+    padding: 15px;
+  }
+}
