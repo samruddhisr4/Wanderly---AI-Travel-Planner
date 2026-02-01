@@ -5,8 +5,40 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background: linear-gradient(
+    135deg,
+    #f0fdf4 0%,
+    #ecfdf5 50%,
+    #d1fae5 100%
+  ); /* Soft emerald gradient */
 }
+
+/* Color variables for Explorer Green palette */
+:root {
+  /* Neutral System */
+  --neutral-bg: #f8fafc; /* slate-50 */
+  --neutral-card: #ffffff; /* white */
+  --neutral-text-primary: #0f172a; /* slate-900 */
+  --neutral-text-secondary: #64748b; /* slate-600 */
+  --neutral-border: #e2e8f0; /* slate-200 */
+
+  --primary-50: "#eef6ff",
+  --primary-100: "#dbeafe",
+  --primary-200: "#bfdbfe",
+  --primary-300: "#93c5fd",
+  --primary-400: "#60a5fa",
+  --primary-500: "#3b82f6", /* main brand */
+  --primary-600: "#2563eb",
+  --primary-700: "#1d4ed8",
+  --primary-800: "#1e40af",
+  --primary-900: "#1e3a8a"
+}
+
+
+  /* Emphasis colors */
+  /* --emerald-50: "#eef6ff",
+  --emerald-600: "#2563eb" for success/savings */
+
 
 .App {
   text-align: center;
@@ -16,11 +48,15 @@ body {
 }
 
 .travel-form {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: var(--neutral-card); /* white */
+  padding: 30px !important;
+  border-radius: 12px; /* increased border radius */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
   margin-bottom: 30px;
+  /* border: 2px solid var(--neutral-border); slate-200 */
+  position: relative !important;
+  overflow: visible !important;
+  min-height: auto !important;
 }
 
 .form-group {
@@ -31,81 +67,229 @@ body {
 .form-group label {
   display: block;
   margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: 600; /* slightly bolder */
+  color: var(--neutral-text-primary); /* slate-900 */
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  padding: 12px; /* increased padding */
+  border: 1px solid var(--neutral-border); /* slate-200 */
+  border-radius: 8px; /* increased border radius */
   font-size: 16px;
+  transition: border-color 0.2s ease; /* smooth transition */
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-500); /* emerald-500 */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); /* emerald-500 with opacity */
+}
+
+/* Ensure submit button is always visible and properly positioned with highest priority */
+.travel-form button[type="submit"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin-top: 25px !important;
+  margin-bottom: 0 !important;
+  position: static !important;
+  float: none !important;
+  clear: both !important;
+  z-index: 9999 !important;
+  min-height: 50px !important;
+  height: auto !important;
+}
+
+/* Override any conflicting styles for the submit button */
+.travel-form .submit-btn {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: static !important;
+  float: none !important;
+  clear: both !important;
+  z-index: 9999 !important;
+  margin-top: 25px !important;
+  margin-bottom: 0 !important;
+  min-height: 50px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Force the form to have enough space for the button */
+.travel-form {
+  padding-bottom: 70px !important; /* Extra padding to ensure space for button */
+  position: relative !important;
+  overflow: visible !important;
 }
 
 .submit-btn {
-  background-color: #007bff;
+  background-color: var(--primary-500); /* emerald-500 */
   color: white;
-  padding: 12px 30px;
+  padding: 14px 30px; /* increased height */
   border: none;
-  border-radius: 5px;
+  border-radius: 8px; /* increased border radius */
   font-size: 16px;
   cursor: pointer;
   width: 100%;
+  font-weight: 600;
+  transition: all 0.2s ease; /* hover animation */
+  position: relative;
+  display: block; /* Ensure it's displayed as block */
+  margin-top: 20px; /* Add some top margin */
+  box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2); /* Add shadow for visibility */
+  z-index: 2; /* Ensure it's above other elements */
 }
 
-.submit-btn:hover {
-  background-color: #0056b3;
+.submit-btn:hover:not(:disabled) {
+  background-color: var(--primary-600); /* emerald-600 */
+  transform: translateY(-1px); /* slight lift effect */
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3); /* emerald-500 shadow */
 }
 
 .submit-btn:disabled {
-  background-color: #6c757d;
+  background-color: #94a3b8; /* slate-400 */
   cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow when disabled */
 }
 
-.plan-result {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  text-align: left;
-}
-
-.budget-breakdown {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
-  margin: 20px 0;
-}
-
-.budget-item {
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 5px;
-  text-align: center;
-}
-
-.daily-itinerary {
-  margin-top: 30px;
-}
-
-.day-card {
-  background: #f8f9fa;
-  padding: 20px;
-  margin-bottom: 15px;
-  border-radius: 5px;
+.submit-btn:disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .loading {
   text-align: center;
   padding: 20px;
   font-size: 18px;
+  color: var(--neutral-text-secondary); /* slate-600 */
+}
+
+.loading::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e2e8f0; /* slate-200 */
+  border-top: 2px solid var(--primary-500); /* emerald-500 */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
-  background: #f8d7da;
-  color: #721c24;
+  background: #fef2f2; /* red-50 */
+  color: #dc2626; /* red-600 */
   padding: 15px;
-  border-radius: 5px;
+  border-radius: 8px;
   margin: 20px 0;
+  border-left: 4px solid #dc2626; /* red-600 */
+}
+
+.plan-result {
+  background: var(--neutral-card); /* white */
+  padding: 30px;
+  border-radius: 12px; /* increased border radius */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
+  text-align: left;
+  border: 1px solid var(--neutral-border); /* slate-200 */
+  margin-bottom: 30px;
+}
+
+.budget-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 25px 0; /* increased margin */
+}
+
+.budget-item {
+  background: var(--emerald-50); /* emerald-50 for nature activities */
+  padding: 18px; /* increased padding */
+  border-radius: 8px; /* increased border radius */
+  text-align: center;
+  border-left: 4px solid var(--primary-500); /* emerald-500 accent */
+}
+
+.daily-itinerary {
+  margin-top: 40px; /* increased spacing */
+}
+
+.day-card {
+  background: var(--neutral-card); /* white */
+  padding: 25px; /* increased padding */
+  margin-bottom: 20px; /* increased spacing */
+  border-radius: 12px; /* increased border radius */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* subtle shadow */
+  border-left: 4px solid var(--primary-500); /* emerald-500 accent */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* hover effect */
+}
+
+.day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1); /* stronger shadow on hover */
+}
+
+.day-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--neutral-text-primary); /* slate-900 */
+  margin-bottom: 15px;
+}
+
+.section-divider {
+  height: 1px;
+  background-color: var(--neutral-border); /* slate-200 */
+  margin: 30px 0;
+}
+
+/* Typography improvements */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--neutral-text-primary); /* slate-900 */
+  line-height: 1.3;
+}
+
+p {
+  color: var(--neutral-text-secondary); /* slate-600 */
+  line-height: 1.6; /* increased line height for readability */
+}
+
+/* Success/savings text */
+.text-emerald-600 {
+  color: var(--emerald-600); /* emerald-600 */
+}
+
+/* Animation for fade-in when plan loads */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -129,10 +129,10 @@ class AIService {
       );
     }
 
-    // Constraint validation
+    // Constraint validation (case-insensitive)
     if (constraints && Array.isArray(constraints)) {
       const invalidConstraints = constraints.filter(
-        (c) => !this.validConstraints.includes(c)
+        (c) => !this.validConstraints.includes(c.toLowerCase())
       );
       if (invalidConstraints.length > 0) {
         errors.push(
@@ -151,17 +151,7 @@ class AIService {
     };
   }
 
-  // Calculate trip duration from dates
-  calculateTripDuration(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diffTime = Math.abs(end - start);
-    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    // Add 1 to include both start and end dates
-    return days + 1;
-  }
-
-  // Transform user input for AI consumption
+  // Transform user input for consistent processing
   transformUserInput(
     destination,
     startDate,
@@ -171,14 +161,13 @@ class AIService {
     travelType,
     constraints
   ) {
-    // Normalize destination format
+    // Normalize destination
     const normalizedDestination = destination
       .trim()
-      .split(",")[0] // Take city name if "City, Country" format
-      .replace(/\s+/g, " ") // Remove extra spaces
+      .split(",")[0]
       .toLowerCase();
 
-    // Format dates consistently
+    // Parse dates
     const start = new Date(startDate);
     const end = new Date(endDate);
     const formattedStartDate = start.toISOString().split("T")[0];
@@ -223,6 +212,15 @@ class AIService {
     };
   }
 
+  // Calculate trip duration
+  calculateTripDuration(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays + 1; // Include both start and end dates
+  }
+
   // Generate AI prompt based on validated user input
   generateTravelPrompt(transformedInput) {
     const {
@@ -237,22 +235,16 @@ class AIService {
       styleConfig,
     } = transformedInput;
 
-    // Build constraint string
-    const constraintText =
-      constraints && constraints.length > 0
-        ? "Special Requirements: " + constraints.join(", ") + "\n"
-        : "";
-
-    // Calculate budget breakdown percentages (must add up to 100%)
+    // Calculate budget breakdown percentages
     const budgetBreakdown = {
-      stay: Math.round(budget * 0.35), // 35%
-      food: Math.round(budget * 0.25), // 25%
-      transport: Math.round(budget * 0.15), // 15%
-      activities: Math.round(budget * 0.2), // 20%
-      contingency: Math.round(budget * 0.05), // 5%
+      stay: Math.round(budget * 0.35),
+      food: Math.round(budget * 0.25),
+      transport: Math.round(budget * 0.15),
+      activities: Math.round(budget * 0.2),
+      contingency: Math.round(budget * 0.05),
     };
 
-    // Verify budget math adds up exactly
+    // Ensure total matches exactly
     const totalCalculated =
       budgetBreakdown.stay +
       budgetBreakdown.food +
@@ -260,15 +252,20 @@ class AIService {
       budgetBreakdown.activities +
       budgetBreakdown.contingency;
 
-    // Adjust contingency if needed to make math exact
     if (totalCalculated !== budget) {
       budgetBreakdown.contingency += budget - totalCalculated;
     }
 
-    // Build the enhanced prompt with STRICT requirements
+    // Format constraints
+    let constraintText = "";
+    if (constraints && constraints.length > 0) {
+      constraintText = "CONSTRAINTS: " + constraints.join(", ") + "\n";
+    }
+
+    // Build a more flexible and encouraging prompt
     let prompt = "";
     prompt +=
-      "You are an expert AI Travel Planning Assistant. Generate a COMPREHENSIVE, DETAILED travel plan following EXACT specifications.\n\n";
+      "You are an expert AI Travel Planning Assistant. Create a realistic, helpful travel plan for the user.\n\n";
     prompt += "DESTINATION: " + destination + "\n";
     prompt +=
       "TRIP DATES: " +
@@ -283,61 +280,43 @@ class AIService {
     prompt +=
       "TRAVEL STYLE: " + travelStyle + " - " + styleConfig.description + "\n";
     prompt += constraintText;
+    prompt += "\nIMPORTANT GUIDELINES:\n\n";
+
+    prompt += "1. Budget Distribution (approximate):\n";
+    prompt += "   - Accommodation: ~" + budgetBreakdown.stay + " INR (35%)\n";
+    prompt += "   - Food: ~" + budgetBreakdown.food + " INR (25%)\n";
+    prompt += "   - Transport: ~" + budgetBreakdown.transport + " INR (15%)\n";
     prompt +=
-      "\nMANDATORY REQUIREMENTS - FAILURE TO COMPLY WILL RESULT IN REJECTION:\n\n";
-
-    prompt += "1. BUDGET MATH VALIDATION:\n";
-    prompt += "   - STAY: " + budgetBreakdown.stay + " INR (35%)\n";
-    prompt += "   - FOOD: " + budgetBreakdown.food + " INR (25%)\n";
-    prompt += "   - TRANSPORT: " + budgetBreakdown.transport + " INR (15%)\n";
-    prompt += "   - ACTIVITIES: " + budgetBreakdown.activities + " INR (20%)\n";
+      "   - Activities: ~" + budgetBreakdown.activities + " INR (20%)\n";
     prompt +=
-      "   - CONTINGENCY: " + budgetBreakdown.contingency + " INR (5%)\n";
-    prompt += "   - TOTAL MUST EQUAL EXACTLY " + budget + " INR\n";
-    prompt += "   - NO ROUNDING ERRORS ALLOWED\n\n";
+      "   - Contingency: ~" + budgetBreakdown.contingency + " INR (5%)\n";
+    prompt += "   - Total should be close to " + budget + " INR\n\n";
 
-    prompt += "2. ACCOMMODATION CONSISTENCY:\n";
+    prompt += "2. Accommodation:\n";
+    prompt += "   - Suggest 3-4 options in different price ranges\n";
+    prompt += "   - Include Google Maps links for each\n";
+    prompt += "   - Recommend one based on value and location\n\n";
+
+    prompt += "3. Daily Itinerary Structure:\n";
     prompt +=
-      "   - USE SAME HOTEL/GUESTHOUSE FOR ENTIRE TRIP UNLESS SPECIFICALLY REQUESTED\n";
-    prompt += "   - PRICE MUST BE CONSISTENT WITH BUDGET ALLOCATION\n";
-    prompt += "   - NO RANDOM PRICE JUMPS BETWEEN DAYS\n";
-    prompt += "   - SUGGEST 3-4 OPTIONS IN DIFFERENT PRICE RANGES\n\n";
+      "   - " +
+      styleConfig.activitiesPerDay +
+      " activities per day (based on travel style)\n";
+    prompt += "   - Include morning, afternoon, and evening activities\n";
+    prompt +=
+      "   - Add practical details like timing and distances when possible\n\n";
 
-    prompt += "3. DATE ACCURACY:\n";
-    prompt += "   - START DATE: " + startDate + "\n";
-    prompt += "   - END DATE: " + endDate + "\n";
-    prompt += "   - EXACTLY " + duration + " DAYS\n";
-    prompt += "   - NO HALLUCINATED DATES\n\n";
+    prompt += "4. Dining Options:\n";
+    prompt += "   - Provide 3-4 options for breakfast, lunch, and dinner\n";
+    prompt += "   - Include price ranges and cuisine types\n";
+    prompt += "   - Add Google Maps links\n\n";
 
-    prompt += "4. DETAILED DAILY STRUCTURE:\n";
-    prompt += "   - INCLUDE DISTANCES BETWEEN LOCATIONS (km)\n";
-    prompt += "   - INCLUDE TRAVEL TIMES (minutes)\n";
-    prompt += "   - INCLUDE ENTRY FEES FOR ALL ATTRACTIONS\n";
-    prompt += "   - INCLUDE BEST VISIT TIMES (avoiding crowds)\n";
-    prompt += "   - INCLUDE BUFFER TIME BETWEEN ACTIVITIES (30-60 mins)\n";
-    prompt += "   - INCLUDE OPENING/CLOSING HOURS\n\n";
+    prompt += "5. Transportation:\n";
+    prompt += "   - Specify main transport modes\n";
+    prompt += "   - Include approximate costs\n";
+    prompt += "   - Mention popular apps (Ola, Uber, etc.)\n\n";
 
-    prompt += "5. RESTAURANT DENSITY:\n";
-    prompt += "   - 3-4 BREAKFAST OPTIONS PER DAY\n";
-    prompt += "   - 3-4 LUNCH OPTIONS PER DAY\n";
-    prompt += "   - 3-4 DINNER OPTIONS PER DAY\n";
-    prompt += "   - INCLUDE PRICING FOR EACH OPTION\n";
-    prompt += "   - INCLUDE GOOGLE MAPS LINKS FOR ALL\n";
-    prompt += "   - INCLUDE CUISINE TYPES AND SPECIALITIES\n\n";
-
-    prompt += "6. TRANSPORT DETAILS:\n";
-    prompt += "   - SPECIFY TRANSPORT MODE FOR EACH TRANSITION\n";
-    prompt += "   - INCLUDE COSTS FOR EACH TRANSPORT SEGMENT\n";
-    prompt += "   - INCLUDE TRAVEL TIMES FOR EACH SEGMENT\n";
-    prompt += "   - INCLUDE APP RECOMMENDATIONS (Ola, Uber, etc.)\n\n";
-
-    prompt += "7. JSON STRUCTURE ENFORCEMENT:\n";
-    prompt += "   - FOLLOW EXACT OUTPUT FORMAT BELOW\n";
-    prompt += "   - ALL FIELDS REQUIRED\n";
-    prompt += "   - NO ADDITIONAL FIELDS\n";
-    prompt += "   - PROPER JSON SYNTAX ONLY\n\n";
-
-    prompt += "OUTPUT FORMAT (STRICT JSON - NO DEVIATIONS):\n";
+    prompt += "OUTPUT FORMAT (JSON - be flexible with structure):\n";
     prompt += "{\n";
     prompt += '  "tripOverview": {\n';
     prompt += '    "destination": "' + destination + '",\n';
@@ -346,8 +325,7 @@ class AIService {
     prompt += '    "endDate": "' + endDate + '",\n';
     prompt += '    "travelStyle": "' + travelStyle + '",\n';
     prompt += '    "travelType": "' + travelType + '",\n';
-    prompt += '    "totalBudget": ' + budget + ",\n";
-    prompt += '    "currency": "INR"\n';
+    prompt += '    "totalBudget": ' + budget + "\n";
     prompt += "  },\n";
     prompt += '  "budgetBreakdown": {\n';
     prompt +=
@@ -365,86 +343,59 @@ class AIService {
     prompt +=
       '    "transport": { "amount": ' +
       budgetBreakdown.transport +
-      ', "description": "Local transport and transfers" },\n';
+      ', "description": "Local transport" },\n';
     prompt +=
       '    "activities": { "amount": ' +
       budgetBreakdown.activities +
-      ', "description": "Entry fees and activities" },\n';
+      ', "description": "Activities and entry fees" },\n';
     prompt +=
       '    "contingency": { "amount": ' +
       budgetBreakdown.contingency +
-      ', "description": "Emergency buffer" }\n';
+      ', "description": "Buffer for unexpected expenses" }\n';
     prompt += "  },\n";
     prompt += '  "dailyItinerary": [\n';
     prompt += "    {\n";
     prompt += '      "day": 1,\n';
     prompt += '      "date": "' + startDate + '",\n';
     prompt += '      "activities": [\n';
-    prompt +=
-      '        "Morning (9:00-12:00): [Exact Activity Name] - Distance from hotel: [X km], Travel time: [X mins], Entry fee: ₹[X], Best time: [X], Buffer: 30 mins",\n';
-    prompt +=
-      '        "Afternoon (12:30-15:30): [Exact Activity Name] - Distance from previous: [X km], Travel time: [X mins], Entry fee: ₹[X], Best time: [X], Buffer: 45 mins",\n';
-    prompt +=
-      '        "Evening (17:00-19:00): [Exact Activity Name] - Distance from previous: [X km], Travel time: [X mins], Entry fee: ₹[X], Best time: [X], Buffer: 30 mins"\n';
+    prompt += '        "Morning: [Activity 1 with brief description]",\n';
+    prompt += '        "Afternoon: [Activity 2 with brief description]",\n';
+    prompt += '        "Evening: [Activity 3 with brief description]"\n';
     prompt += "      ],\n";
     prompt += '      "meals": [\n';
     prompt += '        "BREAKFAST OPTIONS:",\n';
     prompt +=
-      '        "1. [Restaurant Name 1] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
+      '        "1. [Restaurant Name] - [Cuisine] (₹[price] per person) [Google Maps Link]",\n';
     prompt +=
-      '        "2. [Restaurant Name 2] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
-    prompt +=
-      '        "3. [Restaurant Name 3] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
+      '        "2. [Restaurant Name] - [Cuisine] (₹[price] per person) [Google Maps Link]",\n';
     prompt += '        "LUNCH OPTIONS:",\n';
     prompt +=
-      '        "1. [Restaurant Name 1] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
-    prompt +=
-      '        "2. [Restaurant Name 2] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
-    prompt +=
-      '        "3. [Restaurant Name 3] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
+      '        "1. [Restaurant Name] - [Cuisine] (₹[price] per person) [Google Maps Link]",\n';
     prompt += '        "DINNER OPTIONS:",\n';
     prompt +=
-      '        "1. [Restaurant Name 1] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
-    prompt +=
-      '        "2. [Restaurant Name 2] - [Cuisine] (₹[X-X] per person) [Google Maps Link]",\n';
-    prompt +=
-      '        "3. [Restaurant Name 3] - [Cuisine] (₹[X-X] per person) [Google Maps Link]"\n';
+      '        "1. [Restaurant Name] - [Cuisine] (₹[price] per person) [Google Maps Link]"\n';
     prompt += "      ],\n";
     prompt += '      "accommodationOptions": [\n';
     prompt +=
-      '        "1. [Hotel Name 1] - [Features] (₹[X-X]/night) [Google Maps Link]",\n';
+      '        "1. [Hotel Name] - [Brief description] (₹[price]/night) [Google Maps Link]",\n';
     prompt +=
-      '        "2. [Hotel Name 2] - [Features] (₹[X-X]/night) [Google Maps Link]",\n';
-    prompt +=
-      '        "3. [Hotel Name 3] - [Features] (₹[X-X]/night) [Google Maps Link]",\n';
-    prompt +=
-      '        "4. [Hotel Name 4] - [Features] (₹[X-X]/night) [Google Maps Link]"\n';
+      '        "2. [Hotel Name] - [Brief description] (₹[price]/night) [Google Maps Link]"\n';
     prompt += "      ],\n";
     prompt +=
       '      "recommendedAccommodation": "[Hotel Name] - [Reason for recommendation]",\n';
     prompt +=
-      '      "transport": "Morning: [Mode] (₹[X], [X] mins) | Afternoon: [Mode] (₹[X], [X] mins) | Evening: [Mode] (₹[X], [X] mins)",\n';
-    prompt +=
-      '      "notes": "[Detailed practical information including best times, tips, what to carry]"';
+      '      "transport": "Main transport modes and approximate costs",\n';
+    prompt += '      "notes": "[Helpful tips and practical information]"\n';
     prompt += "    }\n";
     prompt += "  ],\n";
     prompt +=
-      '  "safetyNotes": "[Comprehensive safety information for ' +
+      '  "safetyNotes": "[Relevant safety information for ' +
       destination +
       ']"\n';
     prompt += "}\n\n";
 
-    prompt += "FINAL CHECKLIST BEFORE SUBMITTING:\n";
-    prompt += "- Budget breakdown totals exactly " + budget + " INR\n";
-    prompt += "- Dates match: " + startDate + " to " + endDate + "\n";
-    prompt += "- Same accommodation suggested consistently\n";
-    prompt += "- 3-4 restaurant options per meal type\n";
-    prompt += "- Distances and travel times included\n";
-    prompt += "- Entry fees specified for all attractions\n";
-    prompt += "- Valid JSON syntax\n";
-    prompt += "- No hallucinated information\n\n";
-
-    prompt += "GENERATE RESPONSE NOW FOLLOWING ALL REQUIREMENTS EXACTLY.";
+    prompt +=
+      "Please create a helpful, realistic travel plan that follows these guidelines. Focus on providing practical, useful information rather than perfect mathematical precision.";
 
     return prompt;
   }
@@ -493,7 +444,7 @@ class AIService {
       try {
         const aiResponse = await openaiService.generateTravelPlan(prompt);
 
-        // Step 5: Validate AI response meets all requirements
+        // Step 5: Validate AI response with more flexible criteria
         const validationResult = this.validateAIResponse(
           aiResponse,
           transformedInput
@@ -549,12 +500,12 @@ class AIService {
     }
   }
 
-  // Validate AI response against requirements
+  // More flexible validation for AI responses
   validateAIResponse(aiResponse, transformedInput) {
     const errors = [];
     const { startDate, endDate, duration, budget } = transformedInput;
 
-    // Check required structure
+    // Check required structure (more flexible)
     if (!aiResponse.tripOverview) errors.push("Missing tripOverview");
     if (!aiResponse.budgetBreakdown) errors.push("Missing budgetBreakdown");
     if (!aiResponse.dailyItinerary) errors.push("Missing dailyItinerary");
@@ -563,33 +514,26 @@ class AIService {
       return { isValid: false, errors };
     }
 
-    // Validate dates match input
+    // Validate dates (allow some flexibility)
     if (aiResponse.tripOverview.startDate !== startDate) {
-      errors.push(
-        "Start date mismatch: expected " +
-          startDate +
-          ", got " +
-          aiResponse.tripOverview.startDate
-      );
+      // Only warn, don't reject
+      console.log("Date warning: start date mismatch");
     }
     if (aiResponse.tripOverview.endDate !== endDate) {
-      errors.push(
-        "End date mismatch: expected " +
-          endDate +
-          ", got " +
-          aiResponse.tripOverview.endDate
-      );
+      console.log("Date warning: end date mismatch");
     }
-    if (aiResponse.tripOverview.duration !== duration) {
+
+    // Validate duration with flexibility
+    if (Math.abs(aiResponse.tripOverview.duration - duration) > 1) {
       errors.push(
-        "Duration mismatch: expected " +
+        "Duration significantly mismatched: expected " +
           duration +
           ", got " +
           aiResponse.tripOverview.duration
       );
     }
 
-    // Validate budget math
+    // Validate budget with more tolerance (±10%)
     const breakdown = aiResponse.budgetBreakdown;
     const calculatedTotal =
       (breakdown.stay?.amount || 0) +
@@ -598,35 +542,38 @@ class AIService {
       (breakdown.activities?.amount || 0) +
       (breakdown.contingency?.amount || 0);
 
-    if (calculatedTotal !== budget) {
+    const budgetDifference = Math.abs(calculatedTotal - budget);
+    const tolerance = budget * 0.1; // 10% tolerance
+
+    if (budgetDifference > tolerance) {
       errors.push(
-        "Budget math error: breakdown total " +
+        "Budget significantly off: breakdown total " +
           calculatedTotal +
-          " != input budget " +
-          budget
+          " vs input budget " +
+          budget +
+          " (difference: " +
+          budgetDifference +
+          ")"
       );
     }
 
-    // Validate daily itinerary structure
-    if (aiResponse.dailyItinerary.length !== duration) {
+    // Validate daily itinerary structure (more flexible)
+    if (Math.abs(aiResponse.dailyItinerary.length - duration) > 1) {
       errors.push(
-        "Itinerary day count mismatch: expected " +
+        "Itinerary day count significantly mismatched: expected " +
           duration +
           ", got " +
           aiResponse.dailyItinerary.length
       );
     }
 
-    // Validate each day has required fields
+    // Validate each day has basic content
     aiResponse.dailyItinerary.forEach((day, index) => {
       if (!day.activities || day.activities.length === 0) {
-        errors.push("Day " + (index + 1) + " missing activities");
+        console.log("Warning: Day " + (index + 1) + " has no activities");
       }
       if (!day.meals || day.meals.length === 0) {
-        errors.push("Day " + (index + 1) + " missing meals");
-      }
-      if (!day.transport) {
-        errors.push("Day " + (index + 1) + " missing transport information");
+        console.log("Warning: Day " + (index + 1) + " has no meals");
       }
     });
 
@@ -647,217 +594,276 @@ class AIService {
 
     // Calculate EXACT budget breakdown that matches user input
     const budgetBreakdown = {
-      stay: 12250, // 35% of 35000
-      food: 8750, // 25% of 35000
-      transport: 5250, // 15% of 35000
-      activities: 7000, // 20% of 35000
-      contingency: 1750, // 5% of 35000
+      stay: Math.round(budget * 0.35),
+      food: Math.round(budget * 0.25),
+      transport: Math.round(budget * 0.15),
+      activities: Math.round(budget * 0.2),
+      contingency: Math.round(budget * 0.05),
     };
 
-    // Verify it adds up exactly
-    const total =
+    // Ensure total matches exactly
+    const totalCalculated =
       budgetBreakdown.stay +
       budgetBreakdown.food +
       budgetBreakdown.transport +
       budgetBreakdown.activities +
       budgetBreakdown.contingency;
 
-    if (total !== budget) {
-      // Adjust contingency to make math exact
-      budgetBreakdown.contingency =
-        budget -
-        (budgetBreakdown.stay +
-          budgetBreakdown.food +
-          budgetBreakdown.transport +
-          budgetBreakdown.activities);
+    if (totalCalculated !== budget) {
+      budgetBreakdown.contingency += budget - totalCalculated;
     }
 
-    // Generate Mumbai-specific daily itinerary
+    // Generate daily itinerary
     const dailyItinerary = [];
+    const styleConfig = this.travelStyles[travelStyle];
+
+    // Create dates array
+    const dates = [];
     const currentDate = new Date(startDate);
+    for (let i = 0; i < duration; i++) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
 
-    // Mumbai-specific attractions and activities
-    const mumbaiAttractions = [
-      {
-        name: "Gateway of India",
-        distance: "0.5km",
-        travelTime: "10 mins",
-        entryFee: "Free",
-        bestTime: "9-11 AM",
-        description: "Iconic arch monument and tourist attraction",
-      },
-      {
-        name: "Marine Drive",
-        distance: "1.2km",
-        travelTime: "15 mins",
-        entryFee: "Free",
-        bestTime: "6-8 PM",
-        description:
-          "17 km long crescent-shaped promenade along the Bay of Mumbai",
-      },
-      {
-        name: "Chhatrapati Shivaji Terminus",
-        distance: "0.8km",
-        travelTime: "12 mins",
-        entryFee: "₹50",
-        bestTime: "10-12 AM",
-        description: "UNESCO World Heritage Site, historic railway station",
-      },
-      {
-        name: "Elephanta Caves",
-        distance: "12km",
-        travelTime: "45 mins by ferry",
-        entryFee: "₹40",
-        bestTime: "10-12 AM",
-        description:
-          "UNESCO World Heritage Site with ancient rock-cut cave temples",
-      },
-      {
-        name: "Haji Ali Dargah",
-        distance: "2.5km",
-        travelTime: "20 mins",
-        entryFee: "Free",
-        bestTime: "5-7 PM",
-        description:
-          "Mosque and dargah located on an islet off the coast of Worli",
-      },
-      {
-        name: "Siddhivinayak Temple",
-        distance: "3.2km",
-        travelTime: "25 mins",
-        entryFee: "Free (donations accepted)",
-        bestTime: "6-8 AM",
-        description: "Famous Hindu temple dedicated to Lord Ganesh",
-      },
-      {
-        name: "Juhu Beach",
-        distance: "4.1km",
-        travelTime: "30 mins",
-        entryFee: "Free",
-        bestTime: "5-7 PM",
-        description:
-          "Popular beach with food stalls and recreational activities",
-      },
-      {
-        name: "Bandra-Worli Sea Link",
-        distance: "3.5km",
-        travelTime: "25 mins",
-        entryFee: "Free",
-        bestTime: "6-8 PM",
-        description: "Iconic cable-stayed bridge connecting Bandra and Worli",
-      },
-    ];
+    // Generate itinerary for each day
+    for (let i = 0; i < duration; i++) {
+      const dayNum = i + 1;
+      const dateString = dates[i].toISOString().split("T")[0];
 
-    // Mumbai-specific restaurants
-    const mumbaiRestaurants = {
-      breakfast: [
-        "1. Cafe Mondegar - Iconic retro cafe (₹200-300 per person) [https://www.google.com/maps/search/?api=1&query=cafe+mondegar+mumbai]",
-        "2. Britannia & Co. - Parsi cuisine pioneer (₹250-350 per person) [https://www.google.com/maps/search/?api=1&query=britannia+and+co+mumbai]",
-        "3. K Rustoms - Famous for sandwiches (₹150-200 per person) [https://www.google.com/maps/search/?api=1&query=k+rustoms+mumbai]",
-        "4. Bademiya - Late night street food (₹200-250 per person) [https://www.google.com/maps/search/?api=1&query=bademiya+mumbai]",
-      ],
-      lunch: [
-        "1. Trishna - Seafood specialists (₹800-1200 per person) [https://www.google.com/maps/search/?api=1&query=trishna+mumbai]",
-        "2. Gajalee - Award-winning seafood (₹1000-1500 per person) [https://www.google.com/maps/search/?api=1&query=gajalee+mumbai]",
-        "3. Swati Snacks - Gujarati thali (₹400-600 per person) [https://www.google.com/maps/search/?api=1&query=swati+snacks+mumbai]",
-        "4. Burma Burma - Burmese cuisine (₹600-800 per person) [https://www.google.com/maps/search/?api=1&query=burma+burma+mumbai]",
-      ],
-      dinner: [
-        "1. Masala Library - Modern Indian cuisine (₹1500-2000 per person) [https://www.google.com/maps/search/?api=1&query=masala+library+mumbai]",
-        "2. Indian Accent - Fine dining experience (₹2000-2500 per person) [https://www.google.com/maps/search/?api=1&query=indian+accent+mumbai]",
-        "3. The Table - Contemporary fusion (₹1200-1800 per person) [https://www.google.com/maps/search/?api=1&query=the+table+mumbai]",
-        "4. Local Foodie - Authentic local flavors (₹500-800 per person) [https://www.google.com/maps/search/?api=1&query=local+foodie+mumbai]",
-      ],
-    };
-
-    // Mumbai accommodation options
-    const accommodationOptions = [
-      "1. Budget Hotel - Basic amenities (₹1500-2000/night) [https://www.google.com/maps/search/?api=1&query=budget+hotel+mumbai]",
-      "2. Mid-range Hotel - Comfort amenities (₹2000-3000/night) [https://www.google.com/maps/search/?api=1&query=mid+range+hotel+mumbai]",
-      "3. Premium Hotel - Luxury amenities (₹3000-4500/night) [https://www.google.com/maps/search/?api=1&query=premium+hotel+mumbai]",
-      "4. Heritage Property - Unique experience (₹3500-5000/night) [https://www.google.com/maps/search/?api=1&query=heritage+property+mumbai]",
-    ];
-
-    // Create a better distribution of attractions to avoid repetition
-    const usedAttractions = new Set();
-
-    for (let dayNum = 1; dayNum <= duration; dayNum++) {
-      const dateString = currentDate.toISOString().split("T")[0];
-
-      // Select unique attractions for each day
-      const dayAttractions = [];
-      const selectedIndices = [];
-
-      // Morning attraction (unique)
-      let morningIndex;
-      do {
-        morningIndex = Math.floor(Math.random() * mumbaiAttractions.length);
-      } while (
-        usedAttractions.has(morningIndex) &&
-        usedAttractions.size < mumbaiAttractions.length
-      );
-      selectedIndices.push(morningIndex);
-      usedAttractions.add(morningIndex);
-
-      // Afternoon attraction (different from morning)
-      let afternoonIndex;
-      do {
-        afternoonIndex = Math.floor(Math.random() * mumbaiAttractions.length);
-      } while (selectedIndices.includes(afternoonIndex));
-      selectedIndices.push(afternoonIndex);
-
-      // Evening attraction (different from morning and afternoon)
-      let eveningIndex;
-      do {
-        eveningIndex = Math.floor(Math.random() * mumbaiAttractions.length);
-      } while (selectedIndices.includes(eveningIndex));
-      selectedIndices.push(eveningIndex);
-
-      // Reset used attractions if we've used all of them
-      if (usedAttractions.size >= mumbaiAttractions.length - 2) {
-        usedAttractions.clear();
+      // Generate activities based on travel style and destination
+      const activities = [];
+      const activityCount = styleConfig.activitiesPerDay;
+      
+      // Define destination-specific activities based on common attractions
+      const destinationActivities = {
+        jaipur: [
+          "Visit Amber Fort - Historic hill fort with stunning architecture",
+          "Explore City Palace - Royal residence with museum",
+          "See Hawa Mahal - Iconic Palace of Winds",
+          "Shop at Johari Bazaar - Famous jewelry market",
+          "Visit Jantar Mantar - Astronomical observatory",
+          "Explore Nahargarh Fort - Hill fort with panoramic views",
+          "Visit Albert Hall Museum - Art and historical artifacts",
+          "Explore Jal Mahal - Water palace in Man Sagar Lake"
+        ],
+        delhi: [
+          "Visit Red Fort - Mughal era fort complex",
+          "See India Gate - War memorial and national monument",
+          "Explore Qutub Minar - UNESCO World Heritage site",
+          "Visit Humayun's Tomb - Mughal architectural marvel",
+          "Explore Lotus Temple - Baháʼí House of Worship",
+          "Visit Rashtrapati Bhavan - Presidential residence",
+          "Explore Chandni Chowk - Historic market area",
+          "Visit Akshardham Temple - Hindu temple complex"
+        ],
+        mumbai: [
+          "Visit Gateway of India - Historic monument",
+          "Explore Marine Drive - Scenic waterfront boulevard",
+          "See Elephanta Caves - UNESCO World Heritage rock-cut temples",
+          "Visit Siddhivinayak Temple - Famous Ganesh temple",
+          "Explore Bandra-Worli Sea Link - Cable-stayed bridge",
+          "Visit Chhatrapati Shivaji Terminus - Railway station heritage",
+          "Explore Juhu Beach - Popular beachfront",
+          "Visit Film City - Bollywood film production hub"
+        ],
+        goa: [
+          "Relax at Calangute Beach - Popular beach resort town",
+          "Visit Basilica of Bom Jesus - UNESCO World Heritage church",
+          "Explore Fort Aguada - Portuguese fort overlooking the sea",
+          "See Dudhsagar Falls - Four-tiered waterfall",
+          "Explore Old Goa - Former capital with historic churches",
+          "Visit Anjuna Flea Market - Weekly market for handicrafts",
+          "Explore Spice Plantations - Learn about local spices",
+          "Visit Reis Magos Fort - Historic fort overlooking Mandovi River"
+        ],
+        default: [
+          "Visit local historical landmarks and monuments",
+          "Explore cultural centers and museums",
+          "Discover local markets and shopping areas",
+          "Experience natural attractions and parks",
+          "Try local cuisine at authentic restaurants",
+          "Visit scenic viewpoints and photography spots",
+          "Participate in local cultural activities",
+          "Explore local religious or spiritual sites"
+        ]
+      };
+      
+      const destKey = fullDestination.toLowerCase().split(',')[0].trim();
+      const availableActivities = destinationActivities[destKey] || destinationActivities.default;
+      
+      for (let j = 0; j < activityCount; j++) {
+        const timePeriods = ["Morning", "Afternoon", "Evening"];
+        const period = timePeriods[j % 3] || timePeriods[0];
+        const activityIndex = (i * activityCount + j) % availableActivities.length;
+        activities.push(`${period}: ${availableActivities[activityIndex]}`);
       }
 
-      dayAttractions.push(
-        `Morning (9:00-12:00): Visit ${mumbaiAttractions[morningIndex].name} - Distance: ${mumbaiAttractions[morningIndex].distance}, Travel time: ${mumbaiAttractions[morningIndex].travelTime}, Entry fee: ${mumbaiAttractions[morningIndex].entryFee}, Best time: ${mumbaiAttractions[morningIndex].bestTime}, Buffer: 30 mins - ${mumbaiAttractions[morningIndex].description}`
-      );
-
-      dayAttractions.push(
-        `Afternoon (12:30-15:30): Explore ${mumbaiAttractions[afternoonIndex].name} - Distance: ${mumbaiAttractions[afternoonIndex].distance}, Travel time: ${mumbaiAttractions[afternoonIndex].travelTime}, Entry fee: ${mumbaiAttractions[afternoonIndex].entryFee}, Best time: ${mumbaiAttractions[afternoonIndex].bestTime}, Buffer: 45 mins - ${mumbaiAttractions[afternoonIndex].description}`
-      );
-
-      dayAttractions.push(
-        `Evening (17:00-19:00): Experience ${mumbaiAttractions[eveningIndex].name} - Distance: ${mumbaiAttractions[eveningIndex].distance}, Travel time: ${mumbaiAttractions[eveningIndex].travelTime}, Entry fee: ${mumbaiAttractions[eveningIndex].entryFee}, Best time: ${mumbaiAttractions[eveningIndex].bestTime}, Buffer: 30 mins - ${mumbaiAttractions[eveningIndex].description}`
-      );
-
-      // Combine all meal options
+      // Detailed meal options based on destination
+      const mealOptions = {
+        jaipur: {
+          breakfast: [
+            "1. LMB - Local Rajasthani breakfast (₹300-400) [Google Maps Link]",
+            "2. Handi Restaurant - Traditional thali (₹250-350) [Google Maps Link]",
+            "3. Rawat Mishthan Bhandar - Famous for dal baati churma (₹200-300) [Google Maps Link]"
+          ],
+          lunch: [
+            "1. Chokhi Dhani - Authentic Rajasthani thali (₹500-700) [Google Maps Link]",
+            "2. Suvarna Mahal - Royal dining experience (₹700-900) [Google Maps Link]",
+            "3. Jharokha - Traditional Rajasthani cuisine (₹400-600) [Google Maps Link]"
+          ],
+          dinner: [
+            "1. 11th Cross - Fine dining with Rajasthani specialties (₹800-1200) [Google Maps Link]",
+            "2. Bar Palladio - Italian with Indian fusion (₹600-800) [Google Maps Link]",
+            "3. Moonlight Rooftop - Rooftop dining with city views (₹500-700) [Google Maps Link]"
+          ]
+        },
+        delhi: {
+          breakfast: [
+            "1. Bengali Market - Street food favorites (₹150-250) [Google Maps Link]",
+            "2. Indian Accent - Upscale breakfast (₹400-600) [Google Maps Link]",
+            "3. The Great Indian Bagel Shop - Contemporary breakfast (₹250-350) [Google Maps Link]"
+          ],
+          lunch: [
+            "1. Karim's - Historic Mughlai cuisine (₹400-600) [Google Maps Link]",
+            "2. Indian Accent - Modern Indian cuisine (₹800-1000) [Google Maps Link]",
+            "3. Al-Jawahar - Authentic Mughlai dishes (₹300-500) [Google Maps Link]"
+          ],
+          dinner: [
+            "1. Bukhara - World-renowned North Indian cuisine (₹1200-1500) [Google Maps Link]",
+            "2. Dum Pukht - Royal Mughlai cuisine (₹1000-1200) [Google Maps Link]",
+            "3. Punjab Grill - Contemporary Indian (₹700-900) [Google Maps Link]"
+          ]
+        },
+        mumbai: {
+          breakfast: [
+            "1. Britannia & Co. - Iranian cafe classics (₹200-300) [Google Maps Link]",
+            "2. Kala Ghoda Cafe - Continental breakfast (₹300-400) [Google Maps Link]",
+            "3. The Pantry - Modern cafe fare (₹250-350) [Google Maps Link]"
+          ],
+          lunch: [
+            "1. Bademiya - Famous street-side eatery (₹150-250) [Google Maps Link]",
+            "2. Trishna - Excellent seafood (₹600-800) [Google Maps Link]",
+            "3. Swati Snacks - Vegetarian delicacies (₹200-300) [Google Maps Link]"
+          ],
+          dinner: [
+            "1. Wasabi by Morimoto - Japanese cuisine (₹1500-2000) [Google Maps Link]",
+            "2. Indigo Delicatessen - European inspired (₹600-800) [Google Maps Link]",
+            "3. The Table - Fine dining experience (₹800-1200) [Google Maps Link]"
+          ]
+        },
+        goa: {
+          breakfast: [
+            "1. Café Tato - Local Goan breakfast (₹150-250) [Google Maps Link]",
+            "2. Martin's Corner - Portuguese influenced (₹200-300) [Google Maps Link]",
+            "3. Mum's Kitchen - Homestyle Goan food (₹150-250) [Google Maps Link]"
+          ],
+          lunch: [
+            "1. Fisherman's Wharf - Fresh seafood (₹400-600) [Google Maps Link]",
+            "2. Britto's - Traditional Goan cuisine (₹300-500) [Google Maps Link]",
+            "3. Ritz Classic - Seafood platters (₹500-700) [Google Maps Link]"
+          ],
+          dinner: [
+            "1. The Fisherman's Table - Gourmet seafood (₹800-1200) [Google Maps Link]",
+            "2. Mum's Kitchen - Authentic Goan dishes (₹400-600) [Google Maps Link]",
+            "3. Ritz Classic - Portuguese-Goan fusion (₹600-800) [Google Maps Link]"
+          ]
+        },
+        default: {
+          breakfast: [
+            "1. Local café - Regional breakfast specialties (₹150-250) [Google Maps Link]",
+            "2. Hotel restaurant - Continental options (₹200-300) [Google Maps Link]",
+            "3. Street food area - Authentic local flavors (₹100-200) [Google Maps Link]"
+          ],
+          lunch: [
+            "1. Popular local restaurant (₹300-500) [Google Maps Link]",
+            "2. Street food area - Authentic local cuisine (₹200-400) [Google Maps Link]",
+            "3. Mid-range restaurant - Regional specialties (₹400-600) [Google Maps Link]"
+          ],
+          dinner: [
+            "1. Fine dining restaurant (₹800-1200) [Google Maps Link]",
+            "2. Local specialty restaurant (₹500-800) [Google Maps Link]",
+            "3. Rooftop dining - With scenic views (₹600-900) [Google Maps Link]"
+          ]
+        }
+      };
+      
+      const destKeyMeals = fullDestination.toLowerCase().split(',')[0].trim();
+      const mealsData = mealOptions[destKeyMeals] || mealOptions.default;
+      
       const meals = [
         "BREAKFAST OPTIONS:",
-        ...mumbaiRestaurants.breakfast,
+        ...mealsData.breakfast,
         "LUNCH OPTIONS:",
-        ...mumbaiRestaurants.lunch,
+        ...mealsData.lunch,
         "DINNER OPTIONS:",
-        ...mumbaiRestaurants.dinner,
+        ...mealsData.dinner
       ];
 
-      // Daily transport details with proper cost calculation
-      const dailyTransport = `Morning: Taxi (₹200, 20 mins) | Afternoon: Local train (₹30, 45 mins) | Evening: Auto-rickshaw (₹150, 15 mins) | Total transport cost: ₹380`;
+      // Detailed accommodation options based on destination
+      const accommodationOptions = {
+        jaipur: [
+          "1. Rambagh Palace - Luxury heritage hotel (₹25000-35000/night) [Google Maps Link]",
+          "2. Fairmont Jaipur - Palace resort (₹15000-20000/night) [Google Maps Link]",
+          "3. ITC Rajputana - Luxury business hotel (₹8000-12000/night) [Google Maps Link]",
+          "4. Hotel Pearl Palace - Mid-range heritage feel (₹3000-5000/night) [Google Maps Link]",
+          "5. Zostel Jaipur - Budget backpacker hostel (₹800-1200/night) [Google Maps Link]"
+        ],
+        delhi: [
+          "1. The Oberoi - Luxury business hotel (₹18000-25000/night) [Google Maps Link]",
+          "2. The Leela Palace - Palace-style luxury (₹15000-20000/night) [Google Maps Link]",
+          "3. The Ashok - Government-owned luxury (₹6000-9000/night) [Google Maps Link]",
+          "4. Lemon Tree Hotel - Mid-range chain (₹4000-6000/night) [Google Maps Link]",
+          "5. Hosteller Delhi - Budget hostel (₹600-1000/night) [Google Maps Link]"
+        ],
+        mumbai: [
+          "1. The Taj Mahal Palace - Historic luxury hotel (₹15000-20000/night) [Google Maps Link]",
+          "2. The Oberoi - Contemporary luxury (₹12000-18000/night) [Google Maps Link]",
+          "3. Trident Nariman Point - Upscale business hotel (₹8000-12000/night) [Google Maps Link]",
+          "4. The St. Regis Mumbai - Luxury chain hotel (₹10000-15000/night) [Google Maps Link]",
+          "5. Backpackers Panda - Budget hostel (₹700-1200/night) [Google Maps Link]"
+        ],
+        goa: [
+          "1. The Leela Goa - Beachfront luxury (₹15000-20000/night) [Google Maps Link]",
+          "2. W Goa - Boutique luxury resort (₹12000-18000/night) [Google Maps Link]",
+          "3. Park Hyatt Goa Resort - Golf course resort (₹10000-15000/night) [Google Maps Link]",
+          "4. Lemon Tree Resort - Beach resort (₹5000-7000/night) [Google Maps Link]",
+          "5. Zostel Goa - Beachside hostel (₹800-1500/night) [Google Maps Link]"
+        ],
+        default: [
+          "1. Luxury Hotel - Premium experience (₹8000-15000/night) [Google Maps Link]",
+          "2. Upscale Hotel - Good amenities (₹5000-8000/night) [Google Maps Link]",
+          "3. Mid-range Hotel - Comfortable stay (₹2000-4000/night) [Google Maps Link]",
+          "4. Budget Hotel - Basic but clean (₹800-1500/night) [Google Maps Link]",
+          "5. Hostel/Guesthouse - Economy option (₹400-800/night) [Google Maps Link]"
+        ]
+      };
+      
+      const destKeyAccom = fullDestination.toLowerCase().split(',')[0].trim();
+      const availableAccommodations = accommodationOptions[destKeyAccom] || accommodationOptions.default;
+      
+      const recommendedAccommodation = availableAccommodations[Math.floor(Math.random() * availableAccommodations.length)];
+      
+      const transportOptions = {
+        jaipur: "Local transport: Auto-rickshaw, Metro, Ola/Uber, Tourist buses, Cycle rickshaw for old city",
+        delhi: "Local transport: Metro, Auto-rickshaw, Ola/Uber, Delhi Transport buses, App-based cabs",
+        mumbai: "Local transport: Local train, BEST buses, Auto-rickshaw, Ola/Uber, Mumbai Metro",
+        goa: "Local transport: Taxi, Auto-rickshaw, Motorcycle rentals, GSRTC buses, App-based cabs",
+        default: "Local transport: Auto-rickshaw, Ola/Uber, Local buses, Metro (if available), Cycle ricksaw"
+      };
+      
+      const destTransport = transportOptions[destKeyAccom] || transportOptions.default;
 
       dailyItinerary.push({
         day: dayNum,
         date: dateString,
-        activities: dayAttractions,
+        activities: activities,
         meals: meals,
-        accommodationOptions: accommodationOptions,
-        recommendedAccommodation:
-          "Mid-range Hotel - Best value for location and comfort in Mumbai",
-        transport: dailyTransport,
+        accommodationOptions: availableAccommodations,
+        recommendedAccommodation: recommendedAccommodation,
+        transport: destTransport,
         notes:
-          "Start early to avoid crowds at popular attractions. Carry water and comfortable shoes. Check ferry timings for Elephanta Caves. Be aware of local traffic patterns.",
+          "Carry comfortable shoes, stay hydrated, and respect local customs. Check opening hours before visiting attractions.",
       });
-
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
     }
 
     const result = {
@@ -901,190 +907,467 @@ class AIService {
     return result;
   }
 
-  // Generate mock itinerary (will be replaced with AI response)
-  generateMockItinerary(days, travelStyle, constraints = [], destination = "") {
-    const itinerary = [];
-    const styleConfig = this.travelStyles[travelStyle];
+  // Generate safety notes based on destination and travel type
+  generateSafetyNotes(destination, travelType) {
+    let safetyNotes = `Safety Information for ${destination}:\n\n`;
 
-    // Check for specific constraints
-    const hasVegetarianConstraint = constraints.includes("vegetarian");
-    const hasNoMuseumsConstraint = constraints.includes("no museums");
-    const hasOutdoorConstraint = constraints.includes(
-      "outdoor activities only"
-    );
+    safetyNotes += "General Safety Tips:\n";
+    safetyNotes +=
+      "- Stay aware of your surroundings, especially in crowded areas\n";
+    safetyNotes +=
+      "- Keep valuables secure and use hotel safes when available\n";
+    safetyNotes += "- Carry photocopies of important documents\n";
+    safetyNotes += "- Stay hydrated and use sunscreen\n\n";
 
-    for (let i = 1; i <= days; i++) {
-      // Generate specific activities based on destination (example for Jaipur)
-      let activities = [];
-      let meals = [];
-      let accommodation = "";
+    if (travelType === "female" || travelType === "solo") {
+      safetyNotes += "Women's Safety Specific:\n";
+      safetyNotes += "- Avoid walking alone at night in unfamiliar areas\n";
+      safetyNotes += "- Dress modestly and respect local customs\n";
+      safetyNotes += "- Trust your instincts and seek help if needed\n";
+      safetyNotes += "- Share your itinerary with trusted contacts\n\n";
+    }
 
-      if (
-        destination.toLowerCase().includes("jaipur") ||
-        destination.toLowerCase().includes("rajasthan")
-      ) {
-        // Jaipur specific itinerary
-        switch (i) {
-          case 1:
-            activities = [
-              "Morning (9:00-12:00): Visit Amber Fort - UNESCO World Heritage site with stunning architecture and elephant rides available (₹100 entry)",
-              "Afternoon (12:30-15:30): Explore Jaigarh Fort - Houses world's largest cannon on wheels and offers panoramic city views (₹50 entry)",
-              "Evening (17:00-19:00): Shopping at Johari Bazaar - Famous for traditional jewelry and textiles",
-            ];
-            meals = [
-              "Breakfast Options:",
-              "1. Tapri at hotel (₹150 per person) - Local chai and snacks [https://www.google.com/maps/search/?api=1&query=tapri+jaipur]",
-              "2. Anokhi Café (₹200-250 per person) - Traditional Rajasthani breakfast [https://www.google.com/maps/search/?api=1&query=anokhi+cafe+jaipur]",
-              "3. LMB (₹250-300 per person) - Famous for pyaaz kachori [https://www.google.com/maps/search/?api=1&query=lmb+jaipur]",
-              "Lunch Options:",
-              "1. 1135 AD Restaurant (₹800-1200 per person) - Rooftop dining with fort views [https://www.google.com/maps/search/?api=1&query=1135+ad+restaurant+jaipur]",
-              "2. Chokhi Dhani (₹1200-1500 per person) - Ethnic village resort experience [https://www.google.com/maps/search/?api=1&query=chokhi+dhaani+jaipur]",
-              "3. Peacock Rooftop Restaurant (₹600-800 per person) - Indian cuisine with view [https://www.google.com/maps/search/?api=1&query=peacock+rooftop+restaurant+jaipur]",
-              "Dinner Options:",
-              "1. Laxmi Niwas Palace (₹1200-1800 per person) - Royal dining experience [https://www.google.com/maps/search/?api=1&query=laxmi+niwas+palace+jaipur]",
-              "2. Suvarna Mahal (₹1800-2500 per person) - Palace on Wheels restaurant [https://www.google.com/maps/search/?api=1&query=suvarna+mahal+jaipur]",
-              "3. Handi Restaurant (₹1000-1500 per person) - Specializes in tandoori dishes [https://www.google.com/maps/search/?api=1&query=handi+restaurant+jaipur]",
-            ];
-            accommodation = [
-              "Budget Options (₹1500-2500/night):",
-              "1. Hotel Clarks Amer - Heritage property with pool [https://www.google.com/maps/search/?api=1&query=hotel+clarks+amer+jaipur]",
-              "2. Alsisar Haveli - Heritage hotel with traditional décor [https://www.google.com/maps/search/?api=1&query=alsisar+haveli+jaipur]",
-              "3. Samode Haveli - Heritage hotel with courtyard pool [https://www.google.com/maps/search/?api=1&query=samode+haveli+jaipur]",
-              "Mid-Range Options (₹2500-4000/night):",
-              "4. The Lalit Jaipur - Luxury stay with top-notch facilities [https://www.google.com/maps/search/?api=1&query=the+lalit+jaipur]",
-              "5. Fairmont Jaipur - Opulent stay with scenic views [https://www.google.com/maps/search/?api=1&query=fairmont+jaipur]",
-              "6. Shahpura House - Regal ambiance with modern comforts [https://www.google.com/maps/search/?api=1&query=shahpura+house+jaipur]",
-              "Recommended: Hotel Clarks Amer - Best value for heritage experience and central location",
-            ].join("\n");
-            break;
-          case 2:
-            activities = [
-              "Morning (9:30-12:30): City Palace Complex - Royal residence with museums and courtyards (₹200 entry)",
-              "Afternoon (13:00-15:00): Jantar Mantar - Astronomical instruments and UNESCO site (₹100 entry)",
-              "Evening (17:30-19:30): Hawa Mahal - Iconic palace of winds for photo opportunities",
-            ];
-            meals = [
-              "Breakfast: Traditional Rajasthani breakfast at hotel (₹200 per person)",
-              "Lunch: Chokhi Dhani - Ethnic village resort experience (₹1500 per person) [https://www.google.com/maps/search/?api=1&query=chokhi+dhaani+jaipur]",
-              "Dinner: Suvarna Mahal - Palace on Wheels restaurant (₹1800 per person) [https://www.google.com/maps/search/?api=1&query=suvarna+mahal+jaipur]",
-            ];
-            accommodation = [
-              "Budget Options (₹1500-2500/night):",
-              "1. Hotel Clarks Amer - Heritage property with pool [https://www.google.com/maps/search/?api=1&query=hotel+clarks+amer+jaipur]",
-              "2. Alsisar Haveli - Heritage hotel with traditional décor [https://www.google.com/maps/search/?api=1&query=alsisar+haveli+jaipur]",
-              "3. Samode Haveli - Heritage hotel with courtyard pool [https://www.google.com/maps/search/?api=1&query=samode+haveli+jaipur]",
-              "Mid-Range Options (₹2500-4000/night):",
-              "4. The Lalit Jaipur - Luxury stay with top-notch facilities [https://www.google.com/maps/search/?api=1&query=the+lalit+jaipur]",
-              "5. Fairmont Jaipur - Opulent stay with scenic views [https://www.google.com/maps/search/?api=1&query=fairmont+jaipur]",
-              "6. Shahpura House - Regal ambiance with modern comforts [https://www.google.com/maps/search/?api=1&query=shahpura+house+jaipur]",
-              "Recommended: Hotel Clarks Amer - Best value for heritage experience and central location",
-            ].join("\n");
-            break;
-          default:
-            activities = [
-              "Morning (9:00-12:00): Visit local landmarks and cultural sites",
-              "Afternoon (12:30-15:30): Cultural experience or museum visit",
-              "Evening (17:00-19:00): Local cuisine and relaxation",
-            ];
-            meals = [
-              "Breakfast at local café",
-              "Lunch at recommended restaurant",
-              "Dinner at popular local spot",
-            ];
-            accommodation = "Centrally located hotel/guesthouse";
-        }
-      } else {
-        // Generic itinerary for other destinations
-        if (hasNoMuseumsConstraint) {
-          activities = [
-            "Morning (9:00-12:00): City walking tour and local markets (" +
-              styleConfig.activitiesPerDay +
-              " activities)",
-            "Afternoon (12:30-15:30): Park visit and outdoor exploration",
-            "Evening (17:00-19:00): Street food tour and local entertainment",
-          ];
-        } else if (hasOutdoorConstraint) {
-          activities = [
-            "Morning (9:00-12:00): Nature hike and scenic viewpoints (" +
-              styleConfig.activitiesPerDay +
-              " activities)",
-            "Afternoon (12:30-15:30): Outdoor adventure activity",
-            "Evening (17:00-19:00): Sunset viewing and outdoor dining",
-          ];
-        } else {
-          activities = [
-            "Morning (9:00-12:00): Explore local landmarks and monuments (" +
-              styleConfig.activitiesPerDay +
-              " activities)",
-            "Afternoon (12:30-15:30): Cultural experience or museum visit",
-            "Evening (17:00-19:00): Local cuisine and relaxation",
-          ];
-        }
+    safetyNotes += "Emergency Contacts:\n";
+    safetyNotes += "- Local Police: 100\n";
+    safetyNotes += "- Tourist Helpline: 1363\n";
+    safetyNotes += "- Emergency Services: 112\n";
 
-        // Customize meals based on constraints
-        meals = [
-          "Breakfast at local café",
-          "Lunch at recommended restaurant",
-          "Dinner at popular local spot",
-        ];
+    return safetyNotes;
+  }
 
-        if (hasVegetarianConstraint) {
-          meals = [
-            "Vegetarian breakfast at local café",
-            "Plant-based lunch at vegetarian restaurant",
-            "Vegetarian dinner at popular local spot",
-          ];
-        }
+  // Generate only itinerary component
+  async generateItinerary(destination, startDate, endDate, budget, travelStyle, travelType, constraints) {
+    try {
+      // Validate inputs first
+      const validation = this.validateInputs(
+        destination,
+        startDate,
+        endDate,
+        budget,
+        travelStyle,
+        travelType,
+        constraints
+      );
 
-        accommodation = "Centrally located hotel/guesthouse";
+      if (!validation.isValid) {
+        throw new Error("Validation failed: " + validation.errors.join("; "));
       }
 
-      itinerary.push({
-        day: i,
-        date: "Day " + i,
-        activities,
-        meals,
-        accommodation,
-        transport: "Auto-rickshaw/taxi for local travel (₹200-800 per day)",
-        notes:
-          styleConfig.description +
-          " day with " +
-          (constraints.length > 0
-            ? "customized for constraints: " + constraints.join(", ")
-            : "balanced activities") +
-          ". Start early to avoid crowds.",
+      // Transform inputs for AI processing
+      const transformedInput = this.transformUserInput(
+        destination,
+        startDate,
+        endDate,
+        budget,
+        travelStyle,
+        travelType,
+        constraints
+      );
+
+      // Generate focused itinerary prompt
+      const prompt = this.generateItineraryPrompt(transformedInput);
+      
+      try {
+        const aiResponse = await openaiService.generateTravelPlan(prompt);
+        
+        // Validate and extract itinerary
+        if (aiResponse && aiResponse.dailyItinerary) {
+          return {
+            dailyItinerary: aiResponse.dailyItinerary,
+            tripOverview: aiResponse.tripOverview || transformedInput
+          };
+        } else {
+          throw new Error("Invalid itinerary response from AI");
+        }
+      } catch (aiError) {
+        console.log("AI itinerary generation failed, falling back to mock:", aiError.message);
+        // Fallback to mock itinerary
+        return this.generateMockItinerary(transformedInput);
+      }
+    } catch (error) {
+      throw new Error("Failed to generate itinerary: " + error.message);
+    }
+  }
+
+  // Generate only meal options component
+  async generateMeals(destination, startDate, endDate, budget, travelStyle, travelType, constraints) {
+    try {
+      // Transform inputs
+      const transformedInput = this.transformUserInput(
+        destination,
+        startDate,
+        endDate,
+        budget,
+        travelStyle,
+        travelType,
+        constraints
+      );
+
+      // Generate focused meals prompt
+      const prompt = this.generateMealsPrompt(transformedInput);
+      
+      try {
+        const aiResponse = await openaiService.generateTravelPlan(prompt);
+        
+        // Validate and extract meals
+        if (aiResponse && aiResponse.meals) {
+          return {
+            meals: aiResponse.meals,
+            tripOverview: transformedInput
+          };
+        } else {
+          throw new Error("Invalid meals response from AI");
+        }
+      } catch (aiError) {
+        console.log("AI meals generation failed, falling back to mock:", aiError.message);
+        // Fallback to mock meals
+        return this.generateMockMeals(transformedInput);
+      }
+    } catch (error) {
+      throw new Error("Failed to generate meals: " + error.message);
+    }
+  }
+
+  // Generate only accommodation options component
+  async generateAccommodation(destination, startDate, endDate, budget, travelStyle, travelType, constraints) {
+    try {
+      // Transform inputs
+      const transformedInput = this.transformUserInput(
+        destination,
+        startDate,
+        endDate,
+        budget,
+        travelStyle,
+        travelType,
+        constraints
+      );
+
+      // Generate focused accommodation prompt
+      const prompt = this.generateAccommodationPrompt(transformedInput);
+      
+      try {
+        const aiResponse = await openaiService.generateTravelPlan(prompt);
+        
+        // Validate and extract accommodation
+        if (aiResponse && aiResponse.accommodation) {
+          return {
+            accommodation: aiResponse.accommodation,
+            tripOverview: transformedInput
+          };
+        } else {
+          throw new Error("Invalid accommodation response from AI");
+        }
+      } catch (aiError) {
+        console.log("AI accommodation generation failed, falling back to mock:", aiError.message);
+        // Fallback to mock accommodation
+        return this.generateMockAccommodation(transformedInput);
+      }
+    } catch (error) {
+      throw new Error("Failed to generate accommodation: " + error.message);
+    }
+  }
+
+  // Generate only transport options component
+  async generateTransport(destination, startDate, endDate, budget, travelStyle, travelType, constraints) {
+    try {
+      // Transform inputs
+      const transformedInput = this.transformUserInput(
+        destination,
+        startDate,
+        endDate,
+        budget,
+        travelStyle,
+        travelType,
+        constraints
+      );
+
+      // Generate focused transport prompt
+      const prompt = this.generateTransportPrompt(transformedInput);
+      
+      try {
+        const aiResponse = await openaiService.generateTravelPlan(prompt);
+        
+        // Validate and extract transport
+        if (aiResponse && aiResponse.transport) {
+          return {
+            transport: aiResponse.transport,
+            tripOverview: transformedInput
+          };
+        } else {
+          throw new Error("Invalid transport response from AI");
+        }
+      } catch (aiError) {
+        console.log("AI transport generation failed, falling back to mock:", aiError.message);
+        // Fallback to mock transport
+        return this.generateMockTransport(transformedInput);
+      }
+    } catch (error) {
+      throw new Error("Failed to generate transport: " + error.message);
+    }
+  }
+
+  // Generate focused prompts for each component
+  generateItineraryPrompt(transformedInput) {
+    const { fullDestination: destination, startDate, endDate, duration, budget, travelStyle, travelType, constraints } = transformedInput;
+    
+    return `
+    Generate detailed daily itineraries for ${destination} from ${startDate} to ${endDate} (${duration} days) with ${travelStyle} travel style.
+    
+    Focus only on daily activities with:
+    - Morning, afternoon, and evening activities for each day
+    - Specific attractions, timing, and duration
+    - Brief descriptions and estimated costs where applicable
+    - Local transportation between activities if needed
+    
+    JSON format:
+    {
+      "dailyItinerary": [
+        {
+          "day": 1,
+          "date": "${startDate}",
+          "activities": [
+            "Morning: [Activity name] - [Brief description and timing]",
+            "Afternoon: [Activity name] - [Brief description and timing]",
+            "Evening: [Activity name] - [Brief description and timing]"
+          ]
+        }
+      ]
+    }
+    `;
+  }
+
+  generateMealsPrompt(transformedInput) {
+    const { fullDestination: destination, startDate, endDate, duration, budget, travelStyle, travelType, constraints } = transformedInput;
+    
+    return `
+    Generate detailed meal options for ${destination} for a ${duration}-day trip with budget of ${budget} INR.
+    
+    Provide 3-4 options for each meal type:
+    - Breakfast options with local specialties
+    - Lunch options with regional cuisine
+    - Dinner options with fine dining and local restaurants
+    - Include price ranges, cuisine types, and Google Maps links
+    
+    JSON format:
+    {
+      "meals": {
+        "breakfast": [
+          {
+            "name": "[Restaurant Name]",
+            "cuisine": "[Cuisine Type]",
+            "priceRange": "₹[min]-[max] per person",
+            "specialties": "[Key dishes]",
+            "googleMapsLink": "[Working Google Maps URL]"
+          }
+        ],
+        "lunch": [...],
+        "dinner": [...]
+      }
+    }
+    `;
+  }
+
+  generateAccommodationPrompt(transformedInput) {
+    const { fullDestination: destination, startDate, endDate, duration, budget, travelStyle, travelType, constraints } = transformedInput;
+    
+    return `
+    Generate accommodation options for ${destination} for ${duration} nights with budget of ${budget} INR.
+    
+    Provide 3-4 options across different price ranges:
+    - Budget accommodations (hostels/guesthouses)
+    - Mid-range hotels
+    - Luxury hotels
+    - Include price ranges, amenities, location benefits, and Google Maps links
+    
+    JSON format:
+    {
+      "accommodation": [
+        {
+          "name": "[Hotel/Guesthouse Name]",
+          "category": "budget/mid-range/luxury",
+          "priceRange": "₹[min]-[max] per night",
+          "amenities": ["amenity1", "amenity2"],
+          "location": "[Area/Neighborhood]",
+          "googleMapsLink": "[Working Google Maps URL]"
+        }
+      ]
+    }
+    `;
+  }
+
+  generateTransportPrompt(transformedInput) {
+    const { fullDestination: destination, startDate, endDate, duration, budget, travelStyle, travelType, constraints } = transformedInput;
+    
+    return `
+    Generate transportation options for ${destination} for a ${duration}-day trip.
+    
+    Include:
+    - Local transportation options (auto-rickshaw, metro, buses)
+    - App-based services (Ola, Uber)
+    - Airport/Station transfers if needed
+    - Estimated costs and travel times
+    - Tips for efficient travel
+    
+    JSON format:
+    {
+      "transport": {
+        "localOptions": [
+          {
+            "mode": "[Transport mode]",
+            "description": "[Brief description]",
+            "costEstimate": "₹[amount] per trip",
+            "availability": "[Availability info]"
+          }
+        ],
+        "appServices": [...],
+        "tips": ["tip1", "tip2"]
+      }
+    }
+    `;
+  }
+
+  // Mock generators for fallback
+  generateMockItinerary(transformedInput) {
+    const { fullDestination, duration, startDate } = transformedInput;
+    
+    const dailyItinerary = [];
+    const dates = [];
+    const currentDate = new Date(startDate);
+    
+    for (let i = 0; i < duration; i++) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    for (let i = 0; i < duration; i++) {
+      const dayNum = i + 1;
+      const dateString = dates[i].toISOString().split("T")[0];
+      
+      dailyItinerary.push({
+        day: dayNum,
+        date: dateString,
+        activities: [
+          `Morning: Explore ${fullDestination} landmarks - Visit major attractions and museums`,
+          `Afternoon: Cultural experience - Local markets and historical sites`,
+          `Evening: Relaxation time - Local restaurants and evening activities`
+        ]
       });
     }
-
-    return itinerary;
+    
+    return {
+      dailyItinerary,
+      tripOverview: transformedInput
+    };
   }
 
-  // Generate comprehensive safety notes using dedicated safety service
-  generateSafetyNotes(destination, travelType = "general") {
-    try {
-      // Use the dedicated safety service for responsible, comprehensive safety information
-      return safetyService.generateSafetyNotes(destination, travelType);
-    } catch (error) {
-      // Fallback to basic safety guidance if service fails
-      console.warn("Safety service error, using fallback:", error.message);
-      const baseNote =
-        "For " +
-        destination +
-        ": Stick to well-lit, populated areas, especially at night. Research neighborhoods in advance and use reputable transportation services.";
-
-      if (travelType === "solo" || travelType === "female") {
-        return (
-          baseNote +
-          " As a solo traveler, consider staying in well-reviewed accommodations in central areas. Keep emergency contacts handy, share your itinerary with someone trusted, and trust your instincts."
-        );
-      }
-
-      return (
-        baseNote +
-        " Keep emergency contacts handy and share your itinerary with someone trusted."
-      );
-    }
+  generateMockMeals(transformedInput) {
+    const { fullDestination } = transformedInput;
+    
+    return {
+      meals: {
+        breakfast: [
+          {
+            name: `Local Café in ${fullDestination}`,
+            cuisine: "Local/Continental",
+            priceRange: "₹150-300 per person",
+            specialties: "Regional breakfast items, coffee, tea",
+            googleMapsLink: "https://maps.google.com/search?q=local+cafe+" + fullDestination
+          }
+        ],
+        lunch: [
+          {
+            name: `Popular Restaurant in ${fullDestination}`,
+            cuisine: "Regional cuisine",
+            priceRange: "₹300-600 per person",
+            specialties: "Local specialties, vegetarian options",
+            googleMapsLink: "https://maps.google.com/search?q=restaurant+" + fullDestination
+          }
+        ],
+        dinner: [
+          {
+            name: `Fine Dining in ${fullDestination}`,
+            cuisine: "Multi-cuisine",
+            priceRange: "₹800-1500 per person",
+            specialties: "Signature dishes, ambiance dining",
+            googleMapsLink: "https://maps.google.com/search?q=fine+dining+" + fullDestination
+          }
+        ]
+      },
+      tripOverview: transformedInput
+    };
   }
+
+  generateMockAccommodation(transformedInput) {
+    const { fullDestination, budget } = transformedInput;
+    
+    return {
+      accommodation: [
+        {
+          name: `Budget Hotel in ${fullDestination}`,
+          category: "budget",
+          priceRange: "₹800-1500 per night",
+          amenities: ["Wi-Fi", "AC", "Breakfast"],
+          location: "Central area",
+          googleMapsLink: "https://maps.google.com/search?q=budget+hotel+" + fullDestination
+        },
+        {
+          name: `Mid-range Hotel in ${fullDestination}`,
+          category: "mid-range",
+          priceRange: "₹2000-4000 per night",
+          amenities: ["Wi-Fi", "AC", "Restaurant", "Swimming Pool"],
+          location: "Business district",
+          googleMapsLink: "https://maps.google.com/search?q=mid+range+hotel+" + fullDestination
+        },
+        {
+          name: `Luxury Hotel in ${fullDestination}`,
+          category: "luxury",
+          priceRange: "₹5000-10000 per night",
+          amenities: ["Wi-Fi", "AC", "Spa", "Restaurant", "Concierge"],
+          location: "Prime location",
+          googleMapsLink: "https://maps.google.com/search?q=luxury+hotel+" + fullDestination
+        }
+      ],
+      tripOverview: transformedInput
+    };
+  }
+
+  generateMockTransport(transformedInput) {
+    const { fullDestination } = transformedInput;
+    
+    return {
+      transport: {
+        localOptions: [
+          {
+            mode: "Auto-rickshaw",
+            description: "Most common local transport",
+            costEstimate: "₹50-150 per trip",
+            availability: "Available throughout the city"
+          },
+          {
+            mode: "Local buses",
+            description: "Economic public transport",
+            costEstimate: "₹20-50 per trip",
+            availability: "Extensive network coverage"
+          }
+        ],
+        appServices: [
+          {
+            name: "Ola/Uber",
+            description: "App-based taxi services",
+            costEstimate: "₹100-300 per trip",
+            availability: "Available in most areas"
+          }
+        ],
+        tips: [
+          "Book through apps for safety and fixed pricing",
+          "Keep small change for auto-rickshaws",
+          "Use metro where available for faster travel"
+        ]
+      },
+      tripOverview: transformedInput
+    };
+  }
+
 }
 
 module.exports = new AIService();

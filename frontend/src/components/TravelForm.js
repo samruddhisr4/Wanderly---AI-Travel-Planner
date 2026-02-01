@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import "./TravelForm.css";
 
-const TravelForm = ({ onSubmit, loading }) => {
+const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
   const [formData, setFormData] = useState({
     destination: "",
     startDate: "",
@@ -13,15 +14,15 @@ const TravelForm = ({ onSubmit, loading }) => {
 
   // Available constraints
   const availableConstraints = [
-    "no flights",
-    "vegetarian",
-    "wheelchair accessible",
-    "pet friendly",
-    "budget accommodation",
-    "luxury only",
-    "no museums",
-    "outdoor activities only",
-    "cultural sites only",
+    "No flights",
+    "Vegetarian",
+    "Wheelchair accessible",
+    "Pet friendly",
+    "Budget accommodation",
+    "Luxury only",
+    "No museums",
+    "Outdoor activities only",
+    "Cultural sites only",
   ];
 
   const handleChange = (e) => {
@@ -70,7 +71,43 @@ const TravelForm = ({ onSubmit, loading }) => {
       return;
     }
 
-    onSubmit(formData);
+    // Convert constraints to lowercase to match backend expectations
+    const processedData = {
+      ...formData,
+      constraints: formData.constraints.map(c => c.toLowerCase())
+    };
+    onSubmit(processedData);
+  };
+
+  const handleComponentGenerate = (componentType) => {
+    // Basic validation
+    if (
+      !formData.destination ||
+      !formData.startDate ||
+      !formData.endDate ||
+      !formData.budget
+    ) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    if (new Date(formData.startDate) > new Date(formData.endDate)) {
+      alert("Start date must be before end date");
+      return;
+    }
+
+    if (formData.budget <= 0) {
+      alert("Budget must be a positive number");
+      return;
+    }
+
+    // Convert constraints to lowercase to match backend expectations
+    const processedData = {
+      ...formData,
+      constraints: formData.constraints.map(c => c.toLowerCase())
+    };
+    
+    onComponentGenerate(componentType, processedData);
   };
 
   return (
@@ -83,7 +120,7 @@ const TravelForm = ({ onSubmit, loading }) => {
           name="destination"
           value={formData.destination}
           onChange={handleChange}
-          placeholder="e.g., Paris, France"
+          placeholder="e.g., Jaipur, Rajasthan"
           required
         />
       </div>
@@ -120,7 +157,7 @@ const TravelForm = ({ onSubmit, loading }) => {
           name="budget"
           value={formData.budget}
           onChange={handleChange}
-          placeholder="e.g., 1500"
+          placeholder="e.g., 20000"
           min="1"
           required
         />
@@ -181,8 +218,48 @@ const TravelForm = ({ onSubmit, loading }) => {
         </div>
       </div>
 
+      {/* Modular Generation Buttons */}
+      <div className="modular-buttons">
+        <h3>Generate Components Separately:</h3>
+        <div className="button-group">
+          <button 
+            type="button" 
+            className="component-btn" 
+            onClick={() => handleComponentGenerate('itinerary')}
+            disabled={loading}
+          >
+            Generate Itinerary
+          </button>
+          <button 
+            type="button" 
+            className="component-btn" 
+            onClick={() => handleComponentGenerate('meals')}
+            disabled={loading}
+          >
+            Generate Meal Options
+          </button>
+          <button 
+            type="button" 
+            className="component-btn" 
+            onClick={() => handleComponentGenerate('accommodation')}
+            disabled={loading}
+          >
+            Generate Accommodation
+          </button>
+          <button 
+            type="button" 
+            className="component-btn" 
+            onClick={() => handleComponentGenerate('transport')}
+            disabled={loading}
+          >
+            Generate Transport
+          </button>
+        </div>
+        <p className="button-note">Or generate the complete travel plan:</p>
+      </div>
+
       <button type="submit" className="submit-btn" disabled={loading}>
-        {loading ? "Generating Plan..." : "Generate Travel Plan"}
+        {loading ? "Generating Plan..." : "Generate Complete Travel Plan"}
       </button>
     </form>
   );

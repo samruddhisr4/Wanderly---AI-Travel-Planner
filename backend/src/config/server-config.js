@@ -1,5 +1,5 @@
 // Server configuration
-const PORT = process.env.PORT || 3004;
+const PORT = process.env.PORT || 3005;
 
 // CORS configuration
 const CORS_OPTIONS = {

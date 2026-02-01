@@ -227,7 +227,7 @@ const TripForm = ({ onSubmit, loading }) => {
           )}
         </div>
 
-        <button type="submit" className="submit-btn" disabled={loading}>
+        <button type="submit" className="submit-btn" disabled={loading} style={{ backgroundColor: loading ? '#64748b' : '#056b49' }}>
           {loading ? "Generating Plan..." : "Generate Travel Plan"}
         </button>
       </div>

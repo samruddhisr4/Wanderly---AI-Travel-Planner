@@ -1,39 +1,46 @@
 .safety-info {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px; /* increased border radius */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
   padding: 30px;
   margin-bottom: 30px;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .safety-header {
   text-align: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid #e2e8f0; /* slate-200 */
 }
 
 .safety-header h2 {
   margin: 0 0 10px 0;
-  color: #333;
+  color: #0f172a; /* slate-900 */
   font-size: 1.8rem;
+  font-weight: 700; /* bolder */
 }
 
 .safety-header p {
   margin: 0;
-  color: #666;
+  color: #64748b; /* slate-600 */
   font-size: 1.1rem;
 }
 
 .safety-section {
   margin-bottom: 25px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e2e8f0; /* slate-200 */
   border-radius: 8px;
   overflow: hidden;
+  transition: box-shadow 0.2s ease; /* hover effect */
+}
+
+.safety-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .section-header {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   padding: 20px 25px;
   cursor: pointer;
   display: flex;
@@ -43,18 +50,19 @@
 }
 
 .section-header:hover {
-  background: #e9ecef;
+  background: #f1f5f9; /* slate-100 */
 }
 
 .section-header h3 {
   margin: 0;
-  color: #495057;
+  color: #0f172a; /* slate-900 */
   font-size: 1.2rem;
+  font-weight: 600; /* bold */
 }
 
 .toggle-icon {
   transition: transform 0.3s ease;
-  color: #6c757d;
+  color: #64748b; /* slate-600 */
 }
 
 .toggle-icon.expanded {
@@ -68,18 +76,19 @@
 
 /* Helpline Card */
 .helpline-card {
-  background: #fff3cd;
+  background: #fefce8; /* yellow-50 */
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 25px;
-  border: 1px solid #ffeaa7;
+  border: 1px solid #fef3c7; /* yellow-200 */
 }
 
 .helpline-card h4 {
   margin: 0 0 15px 0;
-  color: #856404;
+  color: #854d0e; /* yellow-800 */
   text-align: center;
   font-size: 1.1rem;
+  font-weight: 600; /* bold */
 }
 
 .helpline-info {
@@ -93,7 +102,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 0;
-  border-bottom: 1px solid #ffeaa7;
+  border-bottom: 1px solid #fef3c7; /* yellow-200 */
 }
 
 .helpline-info > div:last-child {
@@ -102,22 +111,22 @@
 
 .label {
   font-weight: 600;
-  color: #856404;
+  color: #854d0e; /* yellow-800 */
   min-width: 80px;
 }
 
 .number {
   font-weight: 700;
-  color: #e67e22;
+  color: #b45309; /* amber-700 */
   font-size: 1.1rem;
 }
 
 .service {
-  color: #666;
+  color: #64748b; /* slate-600 */
 }
 
 .helpline-website a {
-  color: #007bff;
+  color: #1d4ed8; /* blue-700 */
   text-decoration: none;
 }
 
@@ -126,12 +135,12 @@
 }
 
 .notes {
-  color: #666;
+  color: #64748b; /* slate-600 */
   font-style: italic;
 }
 
 .available-badge {
-  background: #28a745;
+  background: #10b981; /* emerald-500 */
   color: white;
   padding: 4px 12px;
   border-radius: 15px;
@@ -150,8 +159,9 @@
 .cultural-considerations h4,
 .emergency-contacts h4 {
   margin: 0 0 15px 0;
-  color: #495057;
+  color: #0f172a; /* slate-900 */
   font-size: 1.1rem;
+  font-weight: 600; /* bold */
 }
 
 .safer-areas ul,
@@ -163,13 +173,13 @@
 .safer-areas li,
 .cultural-considerations li {
   margin-bottom: 10px;
-  color: #666;
-  line-height: 1.4;
+  color: #64748b; /* slate-600 */
+  line-height: 1.6; /* increased line height */
 }
 
 .area-name {
   font-weight: 600;
-  color: #007bff;
+  color: #059669; /* emerald-600 */
 }
 
 .contacts-list {
@@ -179,26 +189,26 @@
 }
 
 .contact-item {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   padding: 12px 15px;
   border-radius: 6px;
-  border-left: 3px solid #007bff;
+  border-left: 3px solid #10b981; /* emerald-500 */
 }
 
 .contact-type {
   font-weight: 600;
-  color: #495057;
+  color: #0f172a; /* slate-900 */
   margin-right: 10px;
 }
 
 .contact-number {
   font-weight: 700;
-  color: #e67e22;
+  color: #b45309; /* amber-700 */
   margin-right: 10px;
 }
 
 .contact-description {
-  color: #666;
+  color: #64748b; /* slate-600 */
   font-size: 0.9rem;
 }
 
@@ -210,17 +220,17 @@
 
 .guidelines-list li {
   margin-bottom: 12px;
-  color: #666;
-  line-height: 1.5;
+  color: #64748b; /* slate-600 */
+  line-height: 1.6; /* increased line height */
 }
 
 /* Disclaimer */
 .safety-disclaimer {
-  background: #f8d7da;
+  background: #fef2f2; /* red-50 */
   border-radius: 8px;
   padding: 20px;
   margin: 25px 0;
-  border: 1px solid #f5c6cb;
+  border: 1px solid #fecaca; /* red-200 */
   display: flex;
   gap: 15px;
 }
@@ -232,28 +242,30 @@
 
 .disclaimer-content h4 {
   margin: 0 0 10px 0;
-  color: #721c24;
+  color: #b91c1c; /* red-600 */
+  font-weight: 600; /* bold */
 }
 
 .disclaimer-content p {
   margin: 0;
-  color: #721c24;
-  line-height: 1.4;
+  color: #b91c1c; /* red-600 */
+  line-height: 1.6; /* increased line height */
 }
 
 /* Quick Tips */
 .quick-tips {
-  background: #e3f2fd;
+  background: #f8fafc; /* slate-50 */
   border-radius: 8px;
   padding: 25px;
-  border: 1px solid #bbdefb;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .quick-tips h3 {
   margin: 0 0 20px 0;
-  color: #1976d2;
+  color: #0f172a; /* slate-900 */
   text-align: center;
   font-size: 1.2rem;
+  font-weight: 600; /* bold */
 }
 
 .tips-grid {
@@ -264,20 +276,21 @@
 
 .tip-card {
   background: white;
-  padding: 15px;
+  padding: 18px; /* increased padding */
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* subtle shadow */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   transition: transform 0.2s ease;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .tip-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tip-icon {
@@ -285,7 +298,7 @@
 }
 
 .tip-text {
-  color: #495057;
+  color: #0f172a; /* slate-900 */
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -293,12 +306,12 @@
 .no-safety {
   text-align: center;
   padding: 40px 20px;
-  color: #6c757d;
+  color: #64748b; /* slate-600 */
 }
 
 .no-safety h3 {
   margin: 0 0 10px 0;
-  color: #495057;
+  color: #475569; /* slate-600 */
 }
 
 /* Responsive design */

@@ -1,13 +1,15 @@
 .day-card {
   background: white;
-  border-radius: 8px;
+  border-radius: 12px; /* increased border radius */
   padding: 25px;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* subtle shadow */
+  border-left: 4px solid #10b981; /* emerald-500 accent */
 }
 
 .day-card.selected {
-  box-shadow: 0 4px 20px rgba(0, 123, 255, 0.15);
-  border: 1px solid #007bff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15); /* emerald-500 shadow */
+  border: 1px solid #10b981; /* emerald-500 border */
 }
 
 .day-header {
@@ -16,35 +18,50 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid #e2e8f0; /* slate-200 */
+  cursor: pointer;
+}
+
+.day-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
 }
 
 .day-header h3 {
   margin: 0;
-  color: #333;
-  font-size: 1.5rem;
+  color: #0f172a; /* slate-900 */
+  font-size: 1.25rem; /* slightly larger */
+  font-weight: 700; /* bolder */
+}
+
+.expand-indicator {
+  color: #64748b; /* slate-600 */
+  font-size: 0.8rem;
+  margin-left: 8px;
 }
 
 .weather-info {
-  background: #e3f2fd;
+  background: #ecfdf5; /* emerald-50 */
   padding: 8px 15px;
   border-radius: 20px;
   font-size: 0.9rem;
-  color: #1976d2;
+  color: #059669; /* emerald-600 */
 }
 
 .day-notes {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   padding: 15px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin-bottom: 25px;
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #10b981; /* emerald-500 */
 }
 
 .day-notes p {
   margin: 0;
-  color: #666;
-  line-height: 1.5;
+  color: #64748b; /* slate-600 */
+  line-height: 1.6; /* increased line height */
 }
 
 /* Activities Section */
@@ -52,7 +69,7 @@
 .meals-section,
 .accommodation-section,
 .transportation-section {
-  margin-bottom: 30px;
+  margin-bottom: 30px; /* increased spacing */
 }
 
 .activities-section h4,
@@ -60,10 +77,32 @@
 .accommodation-section h4,
 .transportation-section h4 {
   margin: 0 0 15px 0;
-  color: #495057;
-  font-size: 1.2rem;
+  color: #0f172a; /* slate-900 */
+  font-size: 1.1rem; /* medium size */
   padding-bottom: 8px;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 2px solid #e2e8f0; /* slate-200 */
+  font-weight: 600; /* bold */
+}
+
+.timeline-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.time-period {
+  margin-bottom: 15px;
+}
+
+.time-chip {
+  display: inline-block;
+  background: #dbeafe; /* blue-100 */
+  color: #1e40af; /* blue-800 */
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 
 .activities-list,
@@ -75,18 +114,18 @@
 
 .activity-item,
 .meal-item {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e2e8f0; /* slate-200 */
   transition: all 0.2s ease;
 }
 
 .activity-item:hover,
 .meal-item:hover {
-  background: #e9ecef;
+  background: #f1f5f9; /* slate-100 */
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .activity-header,
@@ -106,52 +145,92 @@
 .activity-time,
 .meal-time {
   font-weight: 600;
-  color: #007bff;
+  color: #0f172a; /* slate-900 */
   background: white;
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.9rem;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .activity-cost,
 .meal-cost {
-  background: #28a745;
-  color: white;
+  background: #d1fae5; /* emerald-100 */
+  color: #065f46; /* emerald-800 */
   padding: 4px 10px;
   border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 600;
+  border: 1px solid #a7f3d0; /* emerald-200 */
 }
 
 .activity-content h5,
 .meal-content h5 {
   margin: 0 0 8px 0;
-  color: #333;
-  font-size: 1.1rem;
+  color: #0f172a; /* slate-900 */
+  font-size: 1.1rem; /* medium size */
+  font-weight: 600; /* bold */
 }
 
 .activity-content p,
 .meal-content p {
   margin: 0 0 10px 0;
-  color: #666;
-  line-height: 1.4;
+  color: #64748b; /* slate-600 */
+  line-height: 1.6; /* increased line height */
+  font-size: 0.95rem; /* slightly smaller */
 }
 
 .activity-duration,
 .cuisine-type {
-  background: #6c757d;
-  color: white;
+  background: #f1f5f9; /* slate-100 */
+  color: #475569; /* slate-600 */
   padding: 3px 8px;
   border-radius: 12px;
   font-size: 0.8rem;
+  margin-right: 8px;
+}
+
+/* Entry fee badge */
+.entry-fee-badge {
+  display: inline-block;
+  background: #fee2e2; /* red-100 */
+  color: #b91c1c; /* red-600 */
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 8px;
+  border: 1px solid #fecaca; /* red-200 */
+}
+
+/* Location link */
+.location-link {
+  margin-top: 8px;
+}
+
+.view-on-maps-btn {
+  display: inline-block;
+  background: #e0f2fe; /* sky-100 */
+  color: #0369a1; /* sky-700 */
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  text-decoration: none;
+  border: 1px solid #bae6fd; /* sky-200 */
+  transition: all 0.2s ease;
+}
+
+.view-on-maps-btn:hover {
+  background: #bae6fd; /* sky-200 */
+  transform: translateY(-1px);
 }
 
 /* Accommodation Section */
 .accommodation-card {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .accommodation-header {
@@ -165,22 +244,25 @@
 
 .accommodation-header h5 {
   margin: 0;
-  color: #333;
-  font-size: 1.2rem;
+  color: #0f172a; /* slate-900 */
+  font-size: 1.1rem; /* medium size */
+  font-weight: 600; /* bold */
 }
 
 .accommodation-type {
-  background: #007bff;
-  color: white;
+  background: #fef3c7; /* amber-100 */
+  color: #92400e; /* amber-800 */
   padding: 4px 12px;
   border-radius: 15px;
   font-size: 0.9rem;
   font-weight: 500;
+  border: 1px solid #fde68a; /* amber-200 */
 }
 
 .accommodation-details p {
   margin: 8px 0;
-  color: #666;
+  color: #64748b; /* slate-600 */
+  line-height: 1.5;
 }
 
 .location {
@@ -188,56 +270,59 @@
 }
 
 .rating {
-  color: #ffc107;
+  color: #f59e0b; /* amber-500 */
   font-size: 1.1rem;
 }
 
 .rating span {
-  color: #666;
+  color: #64748b; /* slate-600 */
   font-size: 0.9rem;
   margin-left: 5px;
 }
 
 .cost {
   font-weight: 600;
-  color: #28a745;
+  color: #059669; /* emerald-600 */
 }
 
 .accommodation-notes {
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .accommodation-notes p {
   margin: 0;
-  color: #666;
+  color: #64748b; /* slate-600 */
   font-style: italic;
+  line-height: 1.5;
 }
 
 /* Transportation Section */
 .transportation-info {
-  background: #f8f9fa;
+  background: #f8fafc; /* slate-50 */
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid #e2e8f0; /* slate-200 */
 }
 
 .transportation-info p {
   margin: 10px 0;
-  color: #666;
+  color: #64748b; /* slate-600 */
+  line-height: 1.5;
 }
 
 .transportation-info strong {
-  color: #495057;
+  color: #0f172a; /* slate-900 */
 }
 
 .transport-notes {
-  background: #e9ecef;
+  background: #f1f5f9; /* slate-100 */
   padding: 12px;
   border-radius: 6px;
   font-style: italic;
   margin-top: 10px !important;
+  color: #475569; /* slate-600 */
 }
 
 /* Responsive design */
@@ -253,7 +338,7 @@
   }
 
   .day-header h3 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .activity-header,
@@ -268,5 +353,10 @@
   .accommodation-card,
   .transportation-info {
     padding: 15px;
+  }
+
+  .time-chip {
+    display: block;
+    text-align: center;
   }
 }

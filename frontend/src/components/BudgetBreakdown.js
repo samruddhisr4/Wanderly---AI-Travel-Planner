@@ -18,31 +18,31 @@ const BudgetBreakdown = ({ budgetData, totalBudget }) => {
       key: "accommodation",
       label: "Accommodation",
       icon: "🏨",
-      color: "#007bff",
+      color: "#10b981", // emerald-500
     },
     {
       key: "food",
       label: "Food",
       icon: "🍽️",
-      color: "#28a745",
+      color: "#f59e0b", // amber-500
     },
     {
       key: "transportation",
       label: "Transportation",
       icon: "🚗",
-      color: "#ffc107",
+      color: "#3b82f6", // blue-500
     },
     {
       key: "activities",
       label: "Activities",
       icon: "🎉",
-      color: "#6f42c1",
+      color: "#8b5cf6", // violet-500
     },
     {
       key: "contingency",
       label: "Contingency",
       icon: "💰",
-      color: "#dc3545",
+      color: "#ef4444", // red-500
     },
   ];
 
@@ -52,9 +52,9 @@ const BudgetBreakdown = ({ budgetData, totalBudget }) => {
   };
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -118,7 +118,7 @@ const BudgetBreakdown = ({ budgetData, totalBudget }) => {
           <div className="stat-card">
             <span className="stat-label">Daily Average</span>
             <span className="stat-value">
-              {formatCurrency(totalBudget / 7)}{" "}
+              {formatCurrency(Math.round(totalBudget / 7))}{" "}
               {/* Assuming 7-day trip for example */}
             </span>
           </div>

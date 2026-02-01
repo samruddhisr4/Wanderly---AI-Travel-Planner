@@ -13,10 +13,18 @@ const getHealth = (req, res) => {
 // AI service import
 const aiService = require("../services/ai-service");
 
-// Future AI trip planning endpoint
+// AI trip planning endpoint (full plan)
 const createTravelPlan = async (req, res) => {
   try {
-    const { destination, startDate, endDate, budget, travelStyle } = req.body;
+    const {
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelStyle,
+      travelType,
+      constraints
+    } = req.body;
 
     // Basic validation
     if (!destination || !startDate || !endDate || !budget || !travelStyle) {
@@ -29,15 +37,7 @@ const createTravelPlan = async (req, res) => {
           "budget",
           "travelStyle",
         ],
-      });
-    }
-
-    // Validate travel style
-    const validStyles = ["chill", "balanced", "fast-paced"];
-    if (!validStyles.includes(travelStyle)) {
-      return res.status(400).json({
-        error: "Invalid travel style",
-        validStyles: validStyles,
+        received: Object.keys(req.body)
       });
     }
 
@@ -51,21 +51,25 @@ const createTravelPlan = async (req, res) => {
     }
 
     // Validate budget
-    if (budget <= 0 || isNaN(budget)) {
+    if (budget <= 0 || isNaN(Number(budget))) {
       return res.status(400).json({
         error: "Budget must be a positive number",
       });
     }
+
+    // Use default values if not provided
+    const validatedTravelType = travelType || "general";
+    const validatedConstraints = Array.isArray(constraints) ? constraints : [];
 
     // Generate travel plan using AI service
     const travelPlan = await aiService.generateTravelPlan(
       destination,
       startDate,
       endDate,
-      budget,
+      Number(budget),
       travelStyle,
-      req.body.travelType,
-      req.body.constraints
+      validatedTravelType,
+      validatedConstraints
     );
 
     res.status(200).json({
@@ -84,7 +88,225 @@ const createTravelPlan = async (req, res) => {
   }
 };
 
+// Modular generation endpoints
+const generateItinerary = async (req, res) => {
+  try {
+    const {
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelStyle,
+      travelType,
+      constraints
+    } = req.body;
+
+    // Basic validation
+    if (!destination || !startDate || !endDate || !budget || !travelStyle) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: [
+          "destination",
+          "startDate",
+          "endDate",
+          "budget",
+          "travelStyle",
+        ],
+      });
+    }
+
+    // Use default values if not provided
+    const validatedTravelType = travelType || "general";
+    const validatedConstraints = Array.isArray(constraints) ? constraints : [];
+
+    // Generate only itinerary using AI service
+    const itinerary = await aiService.generateItinerary(
+      destination,
+      startDate,
+      endDate,
+      Number(budget),
+      travelStyle,
+      validatedTravelType,
+      validatedConstraints
+    );
+
+    res.status(200).json({
+      message: "Itinerary generated successfully",
+      data: itinerary,
+    });
+  } catch (error) {
+    console.error("Error in generateItinerary:", error);
+    res.status(500).json({
+      error: "Failed to generate itinerary",
+      message: error.message,
+    });
+  }
+};
+
+const generateMeals = async (req, res) => {
+  try {
+    const {
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelStyle,
+      travelType,
+      constraints
+    } = req.body;
+
+    // Basic validation
+    if (!destination || !startDate || !endDate || !budget) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: [
+          "destination",
+          "startDate",
+          "endDate",
+          "budget",
+        ],
+      });
+    }
+
+    // Use default values if not provided
+    const validatedTravelType = travelType || "general";
+    const validatedConstraints = Array.isArray(constraints) ? constraints : [];
+
+    // Generate only meal options using AI service
+    const meals = await aiService.generateMeals(
+      destination,
+      startDate,
+      endDate,
+      Number(budget),
+      travelStyle,
+      validatedTravelType,
+      validatedConstraints
+    );
+
+    res.status(200).json({
+      message: "Meal options generated successfully",
+      data: meals,
+    });
+  } catch (error) {
+    console.error("Error in generateMeals:", error);
+    res.status(500).json({
+      error: "Failed to generate meal options",
+      message: error.message,
+    });
+  }
+};
+
+const generateAccommodation = async (req, res) => {
+  try {
+    const {
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelStyle,
+      travelType,
+      constraints
+    } = req.body;
+
+    // Basic validation
+    if (!destination || !startDate || !endDate || !budget) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: [
+          "destination",
+          "startDate",
+          "endDate",
+          "budget",
+        ],
+      });
+    }
+
+    // Use default values if not provided
+    const validatedTravelType = travelType || "general";
+    const validatedConstraints = Array.isArray(constraints) ? constraints : [];
+
+    // Generate only accommodation options using AI service
+    const accommodation = await aiService.generateAccommodation(
+      destination,
+      startDate,
+      endDate,
+      Number(budget),
+      travelStyle,
+      validatedTravelType,
+      validatedConstraints
+    );
+
+    res.status(200).json({
+      message: "Accommodation options generated successfully",
+      data: accommodation,
+    });
+  } catch (error) {
+    console.error("Error in generateAccommodation:", error);
+    res.status(500).json({
+      error: "Failed to generate accommodation options",
+      message: error.message,
+    });
+  }
+};
+
+const generateTransport = async (req, res) => {
+  try {
+    const {
+      destination,
+      startDate,
+      endDate,
+      budget,
+      travelStyle,
+      travelType,
+      constraints
+    } = req.body;
+
+    // Basic validation
+    if (!destination || !startDate || !endDate || !budget) {
+      return res.status(400).json({
+        error: "Missing required fields",
+        required: [
+          "destination",
+          "startDate",
+          "endDate",
+          "budget",
+        ],
+      });
+    }
+
+    // Use default values if not provided
+    const validatedTravelType = travelType || "general";
+    const validatedConstraints = Array.isArray(constraints) ? constraints : [];
+
+    // Generate only transport options using AI service
+    const transport = await aiService.generateTransport(
+      destination,
+      startDate,
+      endDate,
+      Number(budget),
+      travelStyle,
+      validatedTravelType,
+      validatedConstraints
+    );
+
+    res.status(200).json({
+      message: "Transport options generated successfully",
+      data: transport,
+    });
+  } catch (error) {
+    console.error("Error in generateTransport:", error);
+    res.status(500).json({
+      error: "Failed to generate transport options",
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getHealth,
   createTravelPlan,
+  generateItinerary,
+  generateMeals,
+  generateAccommodation,
+  generateTransport,
 };
