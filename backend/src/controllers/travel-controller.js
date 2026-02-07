@@ -23,7 +23,7 @@ const createTravelPlan = async (req, res) => {
       budget,
       travelStyle,
       travelType,
-      constraints
+      constraints,
     } = req.body;
 
     // Basic validation
@@ -37,7 +37,7 @@ const createTravelPlan = async (req, res) => {
           "budget",
           "travelStyle",
         ],
-        received: Object.keys(req.body)
+        received: Object.keys(req.body),
       });
     }
 
@@ -61,8 +61,8 @@ const createTravelPlan = async (req, res) => {
     const validatedTravelType = travelType || "general";
     const validatedConstraints = Array.isArray(constraints) ? constraints : [];
 
-    // Generate travel plan using AI service
-    const travelPlan = await aiService.generateTravelPlan(
+    // Generate ONLY itinerary (no meals/accommodation/transport)
+    const travelPlan = await aiService.generateItineraryOnly(
       destination,
       startDate,
       endDate,
@@ -73,13 +73,13 @@ const createTravelPlan = async (req, res) => {
     );
 
     res.status(200).json({
-      message: "Travel plan generated successfully",
+      message: "Itinerary generated successfully",
       data: travelPlan,
     });
   } catch (error) {
     console.error("Error in createTravelPlan:", error);
     res.status(500).json({
-      error: "Failed to generate travel plan",
+      error: "Failed to generate itinerary",
       message:
         process.env.NODE_ENV === "development"
           ? error.message
@@ -91,6 +91,8 @@ const createTravelPlan = async (req, res) => {
 // Modular generation endpoints
 const generateItinerary = async (req, res) => {
   try {
+    console.log("Itinerary generation request received:", req.body);
+
     const {
       destination,
       startDate,
@@ -98,7 +100,7 @@ const generateItinerary = async (req, res) => {
       budget,
       travelStyle,
       travelType,
-      constraints
+      constraints,
     } = req.body;
 
     // Basic validation
@@ -119,6 +121,8 @@ const generateItinerary = async (req, res) => {
     const validatedTravelType = travelType || "general";
     const validatedConstraints = Array.isArray(constraints) ? constraints : [];
 
+    console.log("Calling AI service for itinerary...");
+
     // Generate only itinerary using AI service
     const itinerary = await aiService.generateItinerary(
       destination,
@@ -129,6 +133,8 @@ const generateItinerary = async (req, res) => {
       validatedTravelType,
       validatedConstraints
     );
+
+    console.log("Itinerary generated successfully:", itinerary);
 
     res.status(200).json({
       message: "Itinerary generated successfully",
@@ -152,19 +158,14 @@ const generateMeals = async (req, res) => {
       budget,
       travelStyle,
       travelType,
-      constraints
+      constraints,
     } = req.body;
 
     // Basic validation
     if (!destination || !startDate || !endDate || !budget) {
       return res.status(400).json({
         error: "Missing required fields",
-        required: [
-          "destination",
-          "startDate",
-          "endDate",
-          "budget",
-        ],
+        required: ["destination", "startDate", "endDate", "budget"],
       });
     }
 
@@ -205,19 +206,14 @@ const generateAccommodation = async (req, res) => {
       budget,
       travelStyle,
       travelType,
-      constraints
+      constraints,
     } = req.body;
 
     // Basic validation
     if (!destination || !startDate || !endDate || !budget) {
       return res.status(400).json({
         error: "Missing required fields",
-        required: [
-          "destination",
-          "startDate",
-          "endDate",
-          "budget",
-        ],
+        required: ["destination", "startDate", "endDate", "budget"],
       });
     }
 
@@ -258,19 +254,14 @@ const generateTransport = async (req, res) => {
       budget,
       travelStyle,
       travelType,
-      constraints
+      constraints,
     } = req.body;
 
     // Basic validation
     if (!destination || !startDate || !endDate || !budget) {
       return res.status(400).json({
         error: "Missing required fields",
-        required: [
-          "destination",
-          "startDate",
-          "endDate",
-          "budget",
-        ],
+        required: ["destination", "startDate", "endDate", "budget"],
       });
     }
 

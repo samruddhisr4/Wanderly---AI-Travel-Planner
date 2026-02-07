@@ -1,7 +1,76 @@
 import React, { useState } from "react";
 import "./TravelForm.css";
 
-const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
+const colorPalette = {
+  pearl_beige: {
+    DEFAULT: "#f4e8c1",
+    100: "#4b3c0d",
+    200: "#95781a",
+    300: "#dab22d",
+    400: "#e7cd78",
+    500: "#f4e8c1",
+    600: "#f6edce",
+    700: "#f9f2db",
+    800: "#fbf6e7",
+    900: "#fdfbf3",
+  },
+  ash_grey: {
+    DEFAULT: "#a0c1b9",
+    100: "#1c2b27",
+    200: "#38554e",
+    300: "#538075",
+    400: "#75a599",
+    500: "#a0c1b9",
+    600: "#b2cdc6",
+    700: "#c6dad5",
+    800: "#d9e6e3",
+    900: "#ecf3f1",
+  },
+  pacific_blue: {
+    DEFAULT: "#70a0af",
+    100: "#152125",
+    200: "#294249",
+    300: "#3e626e",
+    400: "#528392",
+    500: "#70a0af",
+    600: "#8cb3be",
+    700: "#a9c6cf",
+    800: "#c6d9df",
+    900: "#e2ecef",
+  },
+  vintage_lavender: {
+    DEFAULT: "#706993",
+    100: "#16151d",
+    200: "#2c293a",
+    300: "#423e58",
+    400: "#595375",
+    500: "#706993",
+    600: "#8b85a9",
+    700: "#a8a4be",
+    800: "#c5c2d4",
+    900: "#e2e1e9",
+  },
+  midnight_violet: {
+    DEFAULT: "#331e38",
+    100: "#0a060b",
+    200: "#140c17",
+    300: "#1f1222",
+    400: "#29182d",
+    500: "#331e38",
+    600: "#653c6f",
+    700: "#975aa6",
+    800: "#ba91c4",
+    900: "#dcc8e1",
+  },
+};
+
+const TravelForm = ({
+  onSubmit,
+  onComponentGenerate,
+  loading,
+  loadingComponent,
+  user,
+}) => {
   const [formData, setFormData] = useState({
     destination: "",
     startDate: "",
@@ -26,12 +95,12 @@ const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
   ];
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
 
     if (name === "constraints") {
       // Handle checkbox changes
       setFormData((prev) => {
-        const newConstraints = checked
+        const newConstraints = e.target.checked
           ? [...prev.constraints, value]
           : prev.constraints.filter((c) => c !== value);
         return {
@@ -74,7 +143,7 @@ const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
     // Convert constraints to lowercase to match backend expectations
     const processedData = {
       ...formData,
-      constraints: formData.constraints.map(c => c.toLowerCase())
+      constraints: formData.constraints.map((c) => c.toLowerCase()),
     };
     onSubmit(processedData);
   };
@@ -104,15 +173,34 @@ const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
     // Convert constraints to lowercase to match backend expectations
     const processedData = {
       ...formData,
-      constraints: formData.constraints.map(c => c.toLowerCase())
+      constraints: formData.constraints.map((c) => c.toLowerCase()),
     };
-    
+
     onComponentGenerate(componentType, processedData);
+  };
+
+  // Get button text with loading state
+  const getButtonText = (componentType) => {
+    if (loadingComponent === componentType) {
+      return `Generating ${componentType}...`;
+    }
+    switch (componentType) {
+      case "itinerary":
+        return "Generate Itinerary";
+      case "meals":
+        return "Generate Meal Options";
+      case "accommodation":
+        return "Generate Accommodation";
+      case "transport":
+        return "Generate Transport";
+      default:
+        return `Generate ${componentType}`;
+    }
   };
 
   return (
     <form className="travel-form" onSubmit={handleSubmit}>
-      <div className="form-group">
+      <div className="form-group" style={{}}>
         <label htmlFor="destination">Destination *</label>
         <input
           type="text"
@@ -218,48 +306,19 @@ const TravelForm = ({ onSubmit, onComponentGenerate, loading }) => {
         </div>
       </div>
 
-      {/* Modular Generation Buttons */}
-      <div className="modular-buttons">
-        <h3>Generate Components Separately:</h3>
-        <div className="button-group">
-          <button 
-            type="button" 
-            className="component-btn" 
-            onClick={() => handleComponentGenerate('itinerary')}
-            disabled={loading}
-          >
-            Generate Itinerary
-          </button>
-          <button 
-            type="button" 
-            className="component-btn" 
-            onClick={() => handleComponentGenerate('meals')}
-            disabled={loading}
-          >
-            Generate Meal Options
-          </button>
-          <button 
-            type="button" 
-            className="component-btn" 
-            onClick={() => handleComponentGenerate('accommodation')}
-            disabled={loading}
-          >
-            Generate Accommodation
-          </button>
-          <button 
-            type="button" 
-            className="component-btn" 
-            onClick={() => handleComponentGenerate('transport')}
-            disabled={loading}
-          >
-            Generate Transport
-          </button>
-        </div>
-        <p className="button-note">Or generate the complete travel plan:</p>
-      </div>
+      {/* Only main generation button is shown. Per-day generation appears on each day after itinerary is created. */}
 
-      <button type="submit" className="submit-btn" disabled={loading}>
-        {loading ? "Generating Plan..." : "Generate Complete Travel Plan"}
+      <button
+        type="submit"
+        className="submit-btn"
+        disabled={loading}
+        style={{
+          backgroundColor: colorPalette.vintage_lavender.DEFAULT,
+          color: colorPalette.midnight_violet.DEFAULT,
+          fontWeight: "bold",
+        }}
+      >
+        {loading ? "Generating Itinerary..." : "Generate Itinerary"}
       </button>
     </form>
   );

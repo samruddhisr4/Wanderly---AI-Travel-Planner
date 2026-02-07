@@ -1,10 +1,11 @@
 .budget-breakdown {
   background: white;
-  border-radius: 12px; /* increased border radius */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 30px;
   margin-bottom: 30px;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid black;
+  color: black;
 }
 
 .budget-header {
@@ -13,14 +14,15 @@
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0; /* slate-200 */
+  border-bottom: 3px solid black; /* Black border */
+  background: white;
 }
 
 .budget-header h2 {
   margin: 0;
-  color: #0f172a; /* slate-900 */
+  color: black;
   font-size: 1.8rem;
-  font-weight: 700; /* bolder */
+  font-weight: 700;
 }
 
 .total-budget {
@@ -29,15 +31,20 @@
 
 .total-label {
   display: block;
-  color: #64748b; /* slate-600 */
+  color: black;
   font-size: 1rem;
   margin-bottom: 5px;
-  font-weight: 500; /* medium */
+  font-weight: 500;
 }
 
 .total-amount {
   display: block;
-  color: #059669; /* emerald-600 */
+  background: linear-gradient(
+    135deg,
+    var(--vintage-lavender-500) 0%,
+    var(--vintage-lavender-400) 100%
+  ); /* replaced jasmine gradient */
+  color: black;
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -50,11 +57,11 @@
 }
 
 .budget-category {
-  background: #f8fafc; /* slate-50 */
+  background: white;
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #e2e8f0; /* slate-200 */
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* hover effect */
+  border: 1px solid black;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .budget-category:hover {
@@ -82,18 +89,18 @@
 .category-label {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #0f172a; /* slate-900 */
+  color: black;
 }
 
 .category-amount {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #0f172a; /* slate-900 */
+  color: black;
 }
 
 .progress-container {
   height: 10px; /* increased height */
-  background: #e2e8f0; /* slate-200 */
+  background: #cccccc; /* light grey */
   border-radius: 5px; /* rounded corners */
   overflow: hidden;
   margin-bottom: 10px;
@@ -130,27 +137,27 @@
 
 .percentage {
   font-weight: 600;
-  color: #059669; /* emerald-600 */
+  color: black;
 }
 
 .description {
-  color: #64748b; /* slate-600 */
+  color: black;
   font-style: italic;
   font-size: 0.9rem; /* smaller text */
 }
 
 /* Budget Summary */
 .budget-summary {
-  background: #f8fafc; /* slate-50 */
+  background: white;
   border-radius: 8px;
   padding: 25px;
   margin-bottom: 25px;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid black;
 }
 
 .budget-summary h3 {
   margin: 0 0 20px 0;
-  color: #0f172a; /* slate-900 */
+  color: black;
   text-align: center;
   font-size: 1.3rem;
   font-weight: 600; /* bold */
@@ -168,7 +175,7 @@
   padding: 18px; /* increased padding */
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* subtle shadow */
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid black;
   transition: transform 0.2s ease; /* hover effect */
 }
 
@@ -186,22 +193,22 @@
 
 .stat-value {
   display: block;
-  color: #059669; /* emerald-600 */
+  color: black;
   font-size: 1.2rem;
   font-weight: 700;
 }
 
 /* Savings Tips */
 .savings-tips {
-  background: #fefce8; /* yellow-50 */
+  background: white;
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #fef3c7; /* yellow-200 */
+  border: 1px solid black;
 }
 
 .savings-tips h3 {
   margin: 0 0 15px 0;
-  color: #854d0e; /* yellow-800 */
+  color: black;
   font-weight: 600; /* bold */
 }
 
@@ -212,19 +219,19 @@
 
 .savings-tips li {
   margin-bottom: 8px;
-  color: #854d0e; /* yellow-800 */
+  color: black;
   line-height: 1.5; /* increased line height */
 }
 
 .no-budget {
   text-align: center;
   padding: 40px 20px;
-  color: #64748b; /* slate-600 */
+  color: black;
 }
 
 .no-budget h3 {
   margin: 0 0 10px 0;
-  color: #475569; /* slate-600 */
+  color: black;
 }
 
 /* Responsive design */

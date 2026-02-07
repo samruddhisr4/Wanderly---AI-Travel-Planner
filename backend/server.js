@@ -3,10 +3,18 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 
 // Load environment variables from .env file
-dotenv.config({ path: __dirname + '/.env' });
+dotenv.config({ path: __dirname + "/.env" });
 
-console.log('OPENAI_API_KEY loaded:', process.env.OPENAI_API_KEY ? 'Yes' : 'No');
-console.log('API Key preview:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'Not found');
+console.log(
+  "OPENAI_API_KEY loaded:",
+  process.env.OPENAI_API_KEY ? "Yes" : "No"
+);
+console.log(
+  "API Key preview:",
+  process.env.OPENAI_API_KEY
+    ? process.env.OPENAI_API_KEY.substring(0, 10) + "..."
+    : "Not found"
+);
 
 // Import routes
 const travelRoutes = require("./src/routes/travel-routes");

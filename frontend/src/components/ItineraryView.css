@@ -1,29 +1,36 @@
 .itinerary-view {
   background: white;
-  border-radius: 12px; /* increased border radius */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 30px;
   overflow: hidden;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid var(--ash-grey-800); /* replaced deep-teal-800 */
 }
 
 .itinerary-header {
-  background: #f8fafc; /* slate-50 */
+  background: linear-gradient(
+    135deg,
+    var(--midnight-violet-700) 0%,
+    var(--midnight-violet-600) 50%,
+    var(--pearl-beige-500) 100%
+  );
   padding: 25px 30px;
-  border-bottom: 1px solid #e2e8f0; /* slate-200 */
+  border-bottom: 3px solid var(--vintage-lavender-500); /* replaced jasmine */
   text-align: center;
+  box-shadow: 0 4px 12px rgba(59, 37, 44, 0.12);
 }
 
 .itinerary-header h2 {
   margin: 0 0 10px 0;
-  color: #0f172a; /* slate-900 */
+  color: var(--neutral-text-primary);
   font-size: 1.8rem;
-  font-weight: 700; /* bolder */
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .itinerary-header p {
   margin: 0;
-  color: #64748b; /* slate-600 */
+  color: var(--vintage-lavender-800); /* replaced jasmine-800 */
   font-size: 1.1rem;
 }
 
@@ -34,16 +41,21 @@
 }
 
 .day-navigation {
-  background: #f8fafc; /* slate-50 */
-  border-right: 1px solid #e2e8f0; /* slate-200 */
+  background: linear-gradient(
+    180deg,
+    var(--ash-grey-800) 0%,
+    var(--ash-grey-700) 100%
+  ); /* replaced deep-teal */
+  border-right: 3px solid var(--pearl-beige-600); /* replaced deep-teal */
   padding: 20px;
 }
 
 .day-navigation h3 {
   margin: 0 0 15px 0;
-  color: #0f172a; /* slate-900 */
+  color: var(--midnight-violet-500); /* replaced prussian-blue */
   font-size: 1.2rem;
-  font-weight: 600; /* bold */
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .days-list {
@@ -53,30 +65,46 @@
 }
 
 .day-button {
-  background: white;
-  border: 1px solid #e2e8f0; /* slate-200 */
-  border-radius: 8px; /* increased border radius */
+  background: linear-gradient(
+    135deg,
+    var(--pearl-beige-600) 0%,
+    var(--ash-grey-800) 100%
+  ); /* replaced deep-teal gradient */
+  border: 2px solid var(--ash-grey-700); /* replaced deep-teal-700 */
+  border-radius: 8px;
   padding: 12px 15px;
   text-align: left;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
   font-size: 0.95rem;
+  color: var(--midnight-violet-500);
+  font-weight: 500;
 }
 
 .day-button:hover {
-  background: #f1f5f9; /* slate-100 */
-  border-color: #cbd5e1; /* slate-300 */
+  background: linear-gradient(
+    135deg,
+    var(--vintage-lavender-700) 0%,
+    var(--vintage-lavender-600) 100%
+  ); /* replaced jasmine-700 to 600 */
+  border-color: var(--vintage-lavender-500); /* replaced jasmine */
+  box-shadow: 0 4px 8px rgba(143, 101, 147, 0.18);
 }
 
 .day-button.active {
-  background: #10b981; /* emerald-500 */
-  color: white;
-  border-color: #10b981; /* emerald-500 */
+  background: linear-gradient(
+    135deg,
+    var(--vintage-lavender-500) 0%,
+    var(--vintage-lavender-400) 100%
+  ); /* replaced jasmine gradient */
+  color: var(--midnight-violet-500); /* replaced prussian-blue */
+  border-color: var(--vintage-lavender-300); /* replaced jasmine-300 */
+  box-shadow: 0 6px 12px rgba(143, 101, 147, 0.22);
 }
 
 .day-button.active:hover {
-  background: #059669; /* emerald-600 */
+  background: #dae3e5; /* replaced jasmine-600 */
 }
 
 .day-date {
@@ -84,12 +112,12 @@
   font-size: 0.85rem;
   margin-top: 4px;
   opacity: 0.8;
-  color: #64748b; /* slate-600 */
+  color: var(--pearl-beige-600); /* replaced deep-teal */
 }
 
 .day-button.active .day-date {
   opacity: 0.9;
-  color: white;
+  color: var(--midnight-violet-500); /* replaced prussian-blue */
 }
 
 .day-details {

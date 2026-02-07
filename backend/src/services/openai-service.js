@@ -31,7 +31,7 @@ class OpenAIService {
           {
             role: "system",
             content:
-              "You are an expert travel planner AI assistant. Generate detailed, realistic travel information based on user inputs. Focus on providing practical, helpful information. Return only valid JSON without markdown formatting.",
+              "You are an expert travel planner AI assistant. Generate detailed, realistic travel information based on user inputs. Focus on providing practical, helpful information. Return only valid JSON without markdown formatting or explanations.",
           },
           {
             role: "user",

@@ -14,7 +14,7 @@ A full-stack travel planning application that generates realistic, human-friendl
 
 ### Prerequisites
 - Node.js v16+ 
-- npm or yarn
+- npm 
 - Modern web browser
 
 ### Installation

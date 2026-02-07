@@ -1,15 +1,14 @@
 /* Updated styles for the app */
 .app-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #ffc8dd 0%, #bde0fe 50%, #ffafcc 100%),
-    url("/1.jpg");
+  background-color: white;
+  color: black;
   background-size: cover;
-  /* background-position: center; */
   background-repeat: no-repeat;
   background-attachment: fixed;
   padding: 20px;
-  /* border: 15px solid #f8fafc; Visible border with background color */
   box-sizing: border-box;
+  text-emphasis-color: black;
 }
 
 .app-header {
@@ -46,14 +45,15 @@
 
 .app-header h1 {
   margin: 0;
-  color: #0f172a; /* slate-900 equivalent */
+  color: black;
   font-size: 2rem;
   font-weight: 700;
+  text-shadow: 2px 2px 4px rgba(0, 20, 39, 0.3);
 }
 
 .subtitle {
   margin: 0;
-  color: #1b232d; /* slate-600 equivalent */
+  color: black;
   font-size: 1.1rem;
 }
 
@@ -61,16 +61,80 @@
   max-width: 896px; /* max-w-4xl equivalent (896px) */
   margin: 0 auto;
   padding: 0 20px;
-  /* Semi-transparent white background for content */
+  background-color: white;
   border-radius: 12px;
-  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); */
-  /* backdrop-filter: blur(10px); Frosted glass effect */
-  /* border: 1px solid rgba(226, 232, 240, 0.5); */
+  border: 2px solid black;
 }
 
 /* Ensure the form has enough space for the button */
 .app-main .travel-form {
   margin-bottom: 80px !important; /* Extra margin to ensure button is visible */
+}
+
+/* Detailed meal display styles */
+.meal-details {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #f8fafc;
+  border-left: 3px solid #10b981;
+  font-size: 0.9rem;
+}
+
+.meal-details em {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+
+.category-budget {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.category-mid-range {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.category-luxury {
+  background-color: #f0f9ff;
+  color: #0c4a6e;
+}
+
+.transport-item {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.transport-item h5 {
+  margin-top: 0;
+  color: #0f172a;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+/* Responsive adjustments for detailed content */
+@media (max-width: 768px) {
+  .meal-details {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .transport-item {
+    padding: 12px;
+  }
 }
 
 /* Back to top button */
@@ -81,12 +145,12 @@
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: #0077b6; /* emerald-500 */
-  color: white;
+  background-color: var(--vintage-lavender-500);
+  color: var(--midnight-violet-500);
   border: none;
   font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3); /* emerald-500 shadow */
+  box-shadow: 0 4px 12px rgba(244, 213, 141, 0.3);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -95,7 +159,7 @@
 }
 
 .back-to-top-btn:hover {
-  background-color: #0077b6; /* emerald-600 */
+  background-color: var(--vintage-lavender-600);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 119, 182, 0.4); /* emerald-500 shadow */
+  box-shadow: 0 6px 16px rgba(143, 101, 147, 0.28);
 }

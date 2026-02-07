@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import "./DayCard.css";
 
-const DayCard = ({ dayData, isSelected }) => {
+const DayCard = ({
+  dayData,
+  isSelected,
+  onGenerateMeal,
+  onGenerateAccommodation,
+  onGenerateTransport,
+  loadingComponent,
+}) => {
   const [isExpanded, setIsExpanded] = useState(dayData?.dayNumber === 1); // Auto-expand Day 1
 
   if (!dayData) return null;
@@ -61,7 +68,7 @@ const DayCard = ({ dayData, isSelected }) => {
 
   const parseAndFormatUrl = (url) => {
     try {
-      const parsedUrl = new URL(url);
+      new URL(url); // Validate URL
       return (
         <a
           href={url}
@@ -93,6 +100,44 @@ const DayCard = ({ dayData, isSelected }) => {
             Day {dayData.dayNumber} - {dayData.date}
           </h3>
           <span className="expand-indicator">{isExpanded ? "▼" : "►"}</span>
+        </div>
+        {/* Per-day generate buttons - 3 buttons in a single row */}
+        <div className="day-buttons-row">
+          <button
+            type="button"
+            className="component-btn compact"
+            onClick={(e) => {
+              e.stopPropagation();
+              onGenerateMeal();
+            }}
+            disabled={loadingComponent === "meals"}
+          >
+            {loadingComponent === "meals" ? "Generating..." : "for-meal"}
+          </button>
+          <button
+            type="button"
+            className="component-btn compact"
+            onClick={(e) => {
+              e.stopPropagation();
+              onGenerateAccommodation();
+            }}
+            disabled={loadingComponent === "accommodation"}
+          >
+            {loadingComponent === "accommodation"
+              ? "Generating..."
+              : "accomodation"}
+          </button>
+          <button
+            type="button"
+            className="component-btn compact"
+            onClick={(e) => {
+              e.stopPropagation();
+              onGenerateTransport();
+            }}
+            disabled={loadingComponent === "transport"}
+          >
+            {loadingComponent === "transport" ? "Generating..." : "meal"}
+          </button>
         </div>
         {dayData.weather && (
           <div className="weather-info">🌤️ {dayData.weather}</div>
@@ -132,9 +177,9 @@ const DayCard = ({ dayData, isSelected }) => {
                                 <span className="activity-time">
                                   {formatTime(activity.time)}
                                 </span>
-                                {activity.estimatedCost && (
+                                {activity.cost && (
                                   <span className="activity-cost">
-                                    {formatCurrency(activity.estimatedCost)}
+                                    {formatCurrency(activity.cost)}
                                   </span>
                                 )}
                               </div>
@@ -178,9 +223,9 @@ const DayCard = ({ dayData, isSelected }) => {
                     <div className="meal-header">
                       <span className="meal-time">{formatTime(meal.time)}</span>
                       <span className="meal-type">{meal.type}</span>
-                      {meal.estimatedCost && (
+                      {meal.cost && (
                         <span className="meal-cost">
-                          {formatCurrency(meal.estimatedCost)}
+                          {formatCurrency(meal.cost)}
                         </span>
                       )}
                     </div>
@@ -223,10 +268,9 @@ const DayCard = ({ dayData, isSelected }) => {
                       <span>({dayData.accommodation.rating})</span>
                     </div>
                   )}
-                  {dayData.accommodation.estimatedCost && (
+                  {dayData.accommodation.cost && (
                     <p className="cost">
-                      Cost:{" "}
-                      {formatCurrency(dayData.accommodation.estimatedCost)}
+                      Cost: {formatCurrency(dayData.accommodation.cost)}
                       /night
                     </p>
                   )}

@@ -5,7 +5,7 @@ const {
   generateItinerary,
   generateMeals,
   generateAccommodation,
-  generateTransport
+  generateTransport,
 } = require("../controllers/travel-controller");
 
 const router = express.Router();

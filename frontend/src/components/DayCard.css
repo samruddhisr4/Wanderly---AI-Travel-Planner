@@ -1,15 +1,56 @@
 .day-card {
   background: white;
-  border-radius: 12px; /* increased border radius */
+  border-radius: 12px;
   padding: 25px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); /* subtle shadow */
-  border-left: 4px solid #10b981; /* emerald-500 accent */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-left: 5px solid black;
+  border-right: 2px solid black;
+  border-top: 1px solid black;
+}
+
+/* Component button styles */
+.component-btn {
+  background: black;
+  color: white;
+  padding: 12px 16px;
+  border: 2px solid black;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Compact buttons for day cards */
+.component-btn.compact {
+  padding: 8px 12px;
+  font-size: 13px;
+  min-width: 100px;
+}
+
+.component-btn:hover:not(:disabled) {
+  background: black;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  border-color: black;
+}
+
+.component-btn:disabled {
+  background-color: #cccccc; /* light grey color */
+  color: #666666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
 }
 
 .day-card.selected {
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.15); /* emerald-500 shadow */
-  border: 1px solid #10b981; /* emerald-500 border */
+  box-shadow: 0 6px 20px rgba(143, 101, 147, 0.18);
+  border: 2px solid var(--vintage-lavender-500);
+  border-left: 5px solid var(--vintage-lavender-500);
 }
 
 .day-header {
@@ -18,8 +59,16 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 1px solid #e2e8f0; /* slate-200 */
+  border-bottom: 1px solid var(--ash-grey-800); /* replaced deep-teal */
   cursor: pointer;
+}
+
+/* Day buttons row - 3 buttons in a single row */
+.day-buttons-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .day-title {
@@ -31,37 +80,47 @@
 
 .day-header h3 {
   margin: 0;
-  color: #0f172a; /* slate-900 */
-  font-size: 1.25rem; /* slightly larger */
-  font-weight: 700; /* bolder */
+  color: var(--midnight-violet-500); /* replaced prussian-blue */
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .expand-indicator {
-  color: #64748b; /* slate-600 */
+  color: var(--pearl-beige-600); /* replaced deep-teal */
   font-size: 0.8rem;
   margin-left: 8px;
 }
 
 .weather-info {
-  background: #ecfdf5; /* emerald-50 */
+  background: linear-gradient(
+    135deg,
+    var(--pearl-beige-600) 0%,
+    var(--ash-grey-800) 100%
+  ); /* replaced deep-teal gradient */
   padding: 8px 15px;
   border-radius: 20px;
   font-size: 0.9rem;
-  color: #059669; /* emerald-600 */
+  color: var(--pearl-beige-600);
+  border: 1px solid var(--ash-grey-700);
 }
 
 .day-notes {
-  background: #f8fafc; /* slate-50 */
+  background: linear-gradient(
+    135deg,
+    var(--vintage-lavender-900) 0%,
+    var(--vintage-lavender-800) 100%
+  ); /* replaced jasmine gradient */
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 25px;
-  border-left: 4px solid #10b981; /* emerald-500 */
+  border-left: 4px solid var(--vintage-lavender-500);
+  border-right: 2px solid var(--vintage-lavender-400);
 }
 
 .day-notes p {
   margin: 0;
-  color: #64748b; /* slate-600 */
-  line-height: 1.6; /* increased line height */
+  color: var(--pearl-beige-600); /* replaced deep-teal */
+  line-height: 1.6;
 }
 
 /* Activities Section */
@@ -77,11 +136,11 @@
 .accommodation-section h4,
 .transportation-section h4 {
   margin: 0 0 15px 0;
-  color: #0f172a; /* slate-900 */
-  font-size: 1.1rem; /* medium size */
+  color: var(--midnight-violet-500); /* replaced prussian-blue */
+  font-size: 1.1rem;
   padding-bottom: 8px;
-  border-bottom: 2px solid #e2e8f0; /* slate-200 */
-  font-weight: 600; /* bold */
+  border-bottom: 2px solid var(--ash-grey-800); /* replaced deep-teal-800 */
+  font-weight: 600;
 }
 
 .timeline-view {

@@ -1,38 +1,38 @@
 .safety-info {
   background: white;
-  border-radius: 12px; /* increased border radius */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* softer shadow */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 30px;
   margin-bottom: 30px;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid #c6d2cd; /* deep-teal-800 */
 }
 
 .safety-header {
   text-align: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #e2e8f0; /* slate-200 */
+  border-bottom: 2px solid #c6d2cd; /* deep-teal-800 */
 }
 
 .safety-header h2 {
   margin: 0 0 10px 0;
-  color: #0f172a; /* slate-900 */
+  color: #001427; /* prussian-blue */
   font-size: 1.8rem;
-  font-weight: 700; /* bolder */
+  font-weight: 700;
 }
 
 .safety-header p {
   margin: 0;
-  color: #64748b; /* slate-600 */
+  color: #708d81; /* deep-teal */
   font-size: 1.1rem;
 }
 
 .safety-section {
   margin-bottom: 25px;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  border: 1px solid #c6d2cd; /* deep-teal-800 */
   border-radius: 8px;
   overflow: hidden;
-  transition: box-shadow 0.2s ease; /* hover effect */
+  transition: box-shadow 0.2s ease;
 }
 
 .safety-section:hover {
@@ -40,29 +40,38 @@
 }
 
 .section-header {
-  background: #f8fafc; /* slate-50 */
+  background: linear-gradient(
+    135deg,
+    #aabbb4 0%,
+    #8ea49b 100%
+  ); /* deep-teal-700 to 600 */
   padding: 20px 25px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: background-color 0.2s ease;
+  border-bottom: 2px solid #708d81; /* deep-teal */
 }
 
 .section-header:hover {
-  background: #f1f5f9; /* slate-100 */
+  background: linear-gradient(
+    135deg,
+    #c6d2cd 0%,
+    #aabbb4 100%
+  ); /* deep-teal-800 to 700 */
 }
 
 .section-header h3 {
   margin: 0;
-  color: #0f172a; /* slate-900 */
+  color: #001427; /* prussian-blue */
   font-size: 1.2rem;
-  font-weight: 600; /* bold */
+  font-weight: 600;
 }
 
 .toggle-icon {
   transition: transform 0.3s ease;
-  color: #64748b; /* slate-600 */
+  color: #708d81; /* deep-teal */
 }
 
 .toggle-icon.expanded {
@@ -76,19 +85,35 @@
 
 /* Helpline Card */
 .helpline-card {
-  background: #fefce8; /* yellow-50 */
+  background: linear-gradient(
+    135deg,
+    #f8e5b9 0%,
+    #f6dda2 100%
+  ); /* jasmine-700 to 600 */
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 25px;
-  border: 1px solid #fef3c7; /* yellow-200 */
+  border: 2px solid #f4d58d; /* jasmine-500 */
+  box-shadow: 0 3px 8px rgba(244, 213, 141, 0.2);
+  transition: all 0.3s ease;
+}
+
+.helpline-card:hover {
+  background: linear-gradient(
+    135deg,
+    #faeed1 0%,
+    #f8e5b9 100%
+  ); /* jasmine-800 to 700 */
+  box-shadow: 0 5px 12px rgba(244, 213, 141, 0.35);
+  transform: translateY(-2px);
 }
 
 .helpline-card h4 {
   margin: 0 0 15px 0;
-  color: #854d0e; /* yellow-800 */
+  color: #001427; /* prussian-blue */
   text-align: center;
   font-size: 1.1rem;
-  font-weight: 600; /* bold */
+  font-weight: 600;
 }
 
 .helpline-info {
