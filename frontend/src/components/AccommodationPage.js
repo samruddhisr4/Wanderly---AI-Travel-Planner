@@ -12,12 +12,14 @@ const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }
     const handleGenerate = () => {
         if (onComponentGenerate) {
             onComponentGenerate('accommodation', {
-                destination: tripOverview.destination,
+                destination: tripOverview.fullDestination || tripOverview.destination,
                 startDate: tripOverview.startDate,
                 endDate: tripOverview.endDate,
                 duration: tripOverview.duration,
-                budget: tripOverview.totalBudget,
-                travelStyle: tripOverview.travelStyle
+                budget: tripOverview.budget || tripOverview.totalBudget,
+                travelStyle: tripOverview.travelStyle,
+                travelType: tripOverview.travelType,
+                constraints: tripOverview.constraints || []
             });
         }
     };
@@ -42,25 +44,28 @@ const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }
             <div className="accommodation-header">
                 <h2>Accommodation Options</h2>
                 <div className="header-actions">
-                    {!accommodation && (
-                        <button
-                            className="generate-btn"
-                            onClick={handleGenerate}
-                            disabled={isGenerating}
-                        >
-                            {isGenerating ? 'Generating...' : 'Generate Options AI'}
-                        </button>
-                    )}
-                    {accommodation && (
-                        <button
-                            className="share-btn"
-                            onClick={copyToClipboard}
-                            title="Copy to Clipboard"
-                            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
-                        >
-                            🗒
-                        </button>
-                    )}
+                    <div className="header-actions">
+                        <div className="generation-controls" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            {accommodation && (
+                                <button
+                                    className="share-btn"
+                                    onClick={copyToClipboard}
+                                    title="Copy to Clipboard"
+                                    style={{ background: 'none', border: 'none', fontSize: '2rem', cursor: 'pointer', padding: '10px' }}
+                                >
+                                    🗒
+                                </button>
+                            )}
+                            <button
+                                className="generate-btn"
+                                onClick={handleGenerate}
+                                disabled={isGenerating}
+                                style={{ fontSize: '1.2rem', padding: '12px 24px' }}
+                            >
+                                {isGenerating ? 'Generating...' : (accommodation ? 'Regenerate Options' : 'Generate Options AI')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -89,7 +94,7 @@ const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }
 
                             <div className="card-actions">
                                 <a
-                                    href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(item.searchQuery || item.name)}`}
+                                    href={`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(item.searchQuery || (item.name + " " + (tripOverview.fullDestination || tripOverview.destination)))}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="book-link booking"
@@ -97,7 +102,7 @@ const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }
                                     View on Booking.com
                                 </a>
                                 <a
-                                    href={`https://www.airbnb.com/s/${encodeURIComponent(item.searchQuery || item.name)}/homes`}
+                                    href={`https://www.airbnb.com/s/${encodeURIComponent(item.searchQuery || (item.name + " " + (tripOverview.fullDestination || tripOverview.destination)))}/homes`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="book-link airbnb"

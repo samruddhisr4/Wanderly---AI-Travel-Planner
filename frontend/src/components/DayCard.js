@@ -23,7 +23,8 @@ const DayCard = ({
     }).format(amount);
   };
 
-  const parseAndFormatUrl = (url) => {
+  const parseAndFormatUrl = (url, context = "") => {
+    // If it's already a valid URL, use it
     try {
       new URL(url);
       return (
@@ -32,7 +33,16 @@ const DayCard = ({
         </a>
       );
     } catch {
-      return url;
+      // If not a URL, treat it as a search query
+      // Combine the location name/address with any context (like city/destination)
+      const searchQuery = context ? `${url} ${context}` : url;
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(searchQuery)}`;
+
+      return (
+        <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="view-on-maps-btn">
+          View on Maps
+        </a>
+      );
     }
   };
 
@@ -121,7 +131,7 @@ const DayCard = ({
 
                       {activity.location && (
                         <div className="location-link">
-                          {parseAndFormatUrl(activity.location)}
+                          {parseAndFormatUrl(activity.location, dayData.destination)}
                         </div>
                       )}
                     </div>
@@ -131,54 +141,7 @@ const DayCard = ({
             </div>
           )}
 
-          {/* Meals Section */}
-          {dayData.meals && dayData.meals.length > 0 && (
-            <div className="meals-section">
-              <h4>Meals</h4>
-              <div className="meals-list">
-                {dayData.meals.map((meal, index) => (
-                  <div key={index} className="meal-item">
-                    <div className="meal-header">
-                      {meal.time && (
-                        <span className="meal-time">{formatTime(meal.time)}</span>
-                      )}
-                      <span className="meal-type">{meal.type}</span>
-                      {meal.cost && (
-                        <span className="meal-cost">
-                          {formatCurrency(meal.cost)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="meal-content">
-                      <h5>{meal.recommendation}</h5>
-                      <span className="cuisine-type">{meal.cuisineType}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Accommodation Section */}
-          {dayData.accommodation && (
-            <div className="accommodation-section">
-              <h4>Accommodation</h4>
-              <div className="accommodation-card">
-                <div className="accommodation-header">
-                  <h5>{dayData.accommodation.name}</h5>
-                  <span className="accommodation-type">
-                    {dayData.accommodation.type}
-                  </span>
-                </div>
-                <div className="accommodation-details">
-                  <p className="location">
-                    {dayData.accommodation.location}
-                  </p>
-                  {/* ... (keep existing simple accommodation rendering) ... */}
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Meals and Accommodation removed from DayCard as they have dedicated pages */}
         </>
       )}
     </div>

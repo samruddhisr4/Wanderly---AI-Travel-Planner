@@ -1,102 +1,26 @@
-/* Constraints section styling */
-.checkbox-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two equal columns */
-  gap: 30px 20px; /* 30px gap between columns, 20px between rows */
-  margin-top: 10px;
-}
-
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 4px 0;
-  min-height: 40px; /* allow natural centering */
-}
-.checkbox-item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-
-  background-color: white;
-  border: 1.5px solid black;
-  border-radius: 4px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  position: relative;
-}
-
-.checkbox-item input[type="checkbox"]:checked {
-  background-color: black;
-  border-color: black;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.3);
-}
-
-.checkbox-item input[type="checkbox"]:checked::after {
-  content: "";
-  position: absolute;
-  left: 6px;
-  top: 6px;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background-color: white;
-  box-shadow: -4px -4px 0 0 white, 0 -8px 0 0 white, 4px -4px 0 0 white,
-    -8px 0 0 0 white, 8px 0 0 0 white, -4px 4px 0 0 white, 0 8px 0 0 white,
-    4px 4px 0 0 white;
-}
-
-/* .checkbox-item label {
-  cursor: pointer;
-  font-weight: normal;
-  margin: 0;
-  line-height: 1.8;
-  flex: 1;
-  align-self: center;  Ensure label is centered vertically
-  display: flex;
-  align-items: center;
-} */
-
-.checkbox-item label {
-  line-height: 0.51; /* CRITICAL */
-  display: flex;
-  align-items: center;
-}
-.checkbox-item input[type="checkbox"]:focus,
-.checkbox-item input[type="checkbox"]:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-.checkbox-item:focus-within {
-  outline: none;
-  box-shadow: none;
-}
+/* Constraints section removed */
 
 /* Travel type dropdown styling */
 #travelType {
   /* width: 200px; Reduced width as per preference */
-  height: 40px; /* Exactly 40px */
+  height: 40px;
+  /* Exactly 40px */
   padding: 8px 12px;
-  border: 1px solid black; /* Black border */
+  border: 1px solid black;
+  /* Black border */
   border-radius: 8px;
   font-size: 16px;
   background-color: white;
   color: black;
   transition: border-color 0.2s ease;
-  box-sizing: border-box; /* Include padding in height calculation */
+  box-sizing: border-box;
+  /* Include padding in height calculation */
 }
 
 #travelType:focus {
   outline: none;
-  border-color: black; /* Black border */
+  border-color: black;
+  /* Black border */
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -105,9 +29,11 @@
 .form-group input[type="date"],
 .form-group input[type="number"] {
   width: 100%;
-  height: 40px; /* Exactly 40px */
+  height: 40px;
+  /* Exactly 40px */
   padding: 8px 12px;
-  border: 1px solid black; /* Black border */
+  border: 1px solid black;
+  /* Black border */
   border-radius: 8px;
   font-size: 16px;
   background-color: white;
@@ -118,16 +44,19 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: black; /* Black border */
+  border-color: black;
+  /* Black border */
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Select dropdown styling */
 .form-group select {
   width: 100%;
-  height: 40px; /* Exactly 40px */
+  height: 40px;
+  /* Exactly 40px */
   padding: 8px 12px;
-  border: 1px solid black; /* Black border */
+  border: 1px solid black;
+  /* Black border */
   border-radius: 8px;
   font-size: 16px;
   background-color: white;
@@ -187,7 +116,8 @@
 }
 
 .component-btn:disabled {
-  background-color: #cccccc; /* light grey color */
+  background-color: #cccccc;
+  /* light grey color */
   color: #666666;
   cursor: not-allowed;
   transform: none;
@@ -206,25 +136,37 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .checkbox-group {
-    grid-template-columns: 1fr; /* Single column on mobile */
+    grid-template-columns: 1fr;
+    /* Single column on mobile */
     gap: 15px;
   }
 
   .checkbox-item {
-    height: 32px; /* Slightly smaller on mobile */
+    height: 32px;
+    /* Slightly smaller on mobile */
   }
 
   .checkbox-item input[type="checkbox"] {
-    width: 14px; /* Even smaller on mobile */
-    height: 14px; /* Even smaller on mobile */
-    margin: 0; /* Remove all margins for proper alignment */
-    align-self: center; /* Ensure checkbox is centered vertically */
-    border: 1.5px solid black; /* Black border */
-    outline: none; /* Remove focus outline */
-    appearance: none; /* Remove default browser styling */
-    -webkit-appearance: none; /* Safari compatibility */
-    -moz-appearance: none; /* Firefox compatibility */
-    background-color: white; /* White background */
+    width: 14px;
+    /* Even smaller on mobile */
+    height: 14px;
+    /* Even smaller on mobile */
+    margin: 0;
+    /* Remove all margins for proper alignment */
+    align-self: center;
+    /* Ensure checkbox is centered vertically */
+    border: 1.5px solid black;
+    /* Black border */
+    outline: none;
+    /* Remove focus outline */
+    appearance: none;
+    /* Remove default browser styling */
+    -webkit-appearance: none;
+    /* Safari compatibility */
+    -moz-appearance: none;
+    /* Firefox compatibility */
+    background-color: white;
+    /* White background */
     position: relative;
   }
 
@@ -239,7 +181,8 @@
   }
 
   .checkbox-item label {
-    align-self: center; /* Ensure label is centered vertically */
+    align-self: center;
+    /* Ensure label is centered vertically */
   }
 
   .form-group input[type="text"],
@@ -247,13 +190,15 @@
   .form-group input[type="number"],
   .form-group select,
   #travelType {
-    height: 36px; /* Slightly smaller on mobile */
+    height: 36px;
+    /* Slightly smaller on mobile */
     padding: 6px 10px;
     font-size: 15px;
   }
 
   #travelType {
-    width: 100%; /* Full width on mobile */
+    width: 100%;
+    /* Full width on mobile */
   }
 
   .button-group {

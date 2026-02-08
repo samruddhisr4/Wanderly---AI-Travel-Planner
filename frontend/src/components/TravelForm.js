@@ -15,42 +15,14 @@ const TravelForm = ({
     budget: "",
     travelStyle: "balanced",
     travelType: "general",
-    constraints: [],
   });
-
-  // Available constraints
-  const availableConstraints = [
-    "No flights",
-    "Vegetarian",
-    "Wheelchair accessible",
-    "Pet friendly",
-    "Budget accommodation",
-    "Luxury only",
-    "No museums",
-    "Outdoor activities only",
-    "Cultural sites only",
-  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    if (name === "constraints") {
-      // Handle checkbox changes
-      setFormData((prev) => {
-        const newConstraints = e.target.checked
-          ? [...prev.constraints, value]
-          : prev.constraints.filter((c) => c !== value);
-        return {
-          ...prev,
-          constraints: newConstraints,
-        };
-      });
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -80,7 +52,7 @@ const TravelForm = ({
     // Convert constraints to lowercase to match backend expectations
     const processedData = {
       ...formData,
-      constraints: formData.constraints.map((c) => c.toLowerCase()),
+      constraints: [], // Send empty array as backend expects it
     };
     onSubmit(processedData);
   };
@@ -110,7 +82,7 @@ const TravelForm = ({
     // Convert constraints to lowercase to match backend expectations
     const processedData = {
       ...formData,
-      constraints: formData.constraints.map((c) => c.toLowerCase()),
+      constraints: [], // Send empty array as backend expects it
     };
 
     onComponentGenerate(componentType, processedData);
@@ -224,24 +196,7 @@ const TravelForm = ({
         </select>
       </div>
 
-      <div className="form-group">
-        <label>Special Constraints (Optional)</label>
-        <div className="checkbox-group">
-          {availableConstraints.map((constraint) => (
-            <div key={constraint} className="checkbox-item">
-              <input
-                type="checkbox"
-                id={`constraint-${constraint}`}
-                name="constraints"
-                value={constraint}
-                checked={formData.constraints.includes(constraint)}
-                onChange={handleChange}
-              />
-              <label htmlFor={`constraint-${constraint}`}>{constraint}</label>
-            </div>
-          ))}
-        </div>
-      </div>
+
 
       {/* Only main generation button is shown. Per-day generation appears on each day after itinerary is created. */}
 

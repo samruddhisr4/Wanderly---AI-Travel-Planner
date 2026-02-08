@@ -80,41 +80,7 @@ const TravelPlan = ({ plan, onComponentGenerate, loadingComponent, user, onUpdat
       />
 
       {/* Keep other sections (meals/global, accommodation, transport, budget, safety) as before */}
-      {!dailyItinerary &&
-        meals &&
-        (meals.breakfast || meals.lunch || meals.dinner) && (
-          <div className="meals-section">
-            <h3>Meal Recommendations</h3>
-            {/* render simplified meal lists */}
-            {meals.breakfast &&
-              Array.isArray(meals.breakfast) &&
-              meals.breakfast.length > 0 && (
-                <div className="meal-type">
-                  <h4>Breakfast Options ({meals.breakfast.length} options)</h4>
-                  {meals.breakfast.map((item, idx) => (
-                    <div key={idx} className="meal-item">
-                      <strong>{item.name}</strong> - {item.cuisine} •{" "}
-                      {item.priceRange}
-                    </div>
-                  ))}
-                </div>
-              )}
-          </div>
-        )}
-
-      {accommodation && accommodation.length > 0 && (
-        <div className="accommodation-section">
-          <h3>Accommodation Options ({accommodation.length} options)</h3>
-          {accommodation.map((item, idx) => (
-            <div key={idx} className="accommodation-item">
-              <h4>{item.name}</h4>
-              <p>
-                <strong>Price Range:</strong> {item.priceRange}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Meals and Accommodation sections removed from here - now on separate pages */}
 
       {transport && (
         <div className="transport-section">

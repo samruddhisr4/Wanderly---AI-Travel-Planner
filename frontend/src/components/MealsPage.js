@@ -4,22 +4,50 @@ import './MealsPage.css';
 const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all');
+    const [dietaryPreferences, setDietaryPreferences] = useState([]);
+
+    const dietaryOptions = [
+        "Vegetarian",
+        "Non-Vegetarian",
+        "Vegan",
+        "Halal",
+        "Kosher",
+        "Gluten-Free",
+        "Nut Allergy",
+        "Lactose Intolerant"
+    ];
 
     if (!travelPlan) return <div className="meals-page">No plan available.</div>;
 
     const { meals, localSpecialties, tripOverview } = travelPlan;
     const isGenerating = loadingComponent === 'meals' || loading;
 
+    const handleDietaryChange = (e) => {
+        const { value, checked } = e.target;
+        if (checked) {
+            setDietaryPreferences([...dietaryPreferences, value]);
+        } else {
+            setDietaryPreferences(dietaryPreferences.filter(p => p !== value));
+        }
+    };
+
     const handleGenerate = () => {
         if (onComponentGenerate) {
+            // Merge existing constraints with new dietary preferences
+            const combinedConstraints = [
+                ...(tripOverview.constraints || []),
+                ...dietaryPreferences
+            ];
+
             onComponentGenerate('meals', {
-                destination: tripOverview.destination,
+                destination: tripOverview.fullDestination || tripOverview.destination,
                 startDate: tripOverview.startDate,
                 endDate: tripOverview.endDate,
                 duration: tripOverview.duration,
-                budget: tripOverview.totalBudget,
+                budget: tripOverview.budget || tripOverview.totalBudget,
                 travelStyle: tripOverview.travelStyle,
-                constraints: tripOverview.constraints || []
+                travelType: tripOverview.travelType, // Ensure travelType is passed
+                constraints: combinedConstraints
             });
         }
     };
@@ -58,6 +86,8 @@ const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
             items = items.filter(m => m.dietaryTags?.some(t => t.toLowerCase().includes('veg')));
         }
 
+        if (!Array.isArray(items)) return null;
+
         return (
             <div className="meal-section">
                 <h3 className="meal-type-header">{type.charAt(0).toUpperCase() + type.slice(1)}</h3>
@@ -82,7 +112,7 @@ const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
                             )}
 
                             <a
-                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.searchQuery || place.name)}`}
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.searchQuery || (place.name + " " + (tripOverview.fullDestination || tripOverview.destination)))}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="maps-link"
@@ -98,28 +128,57 @@ const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
 
     return (
         <div className="meals-page">
-            <div className="meals-header">
-                <h2>Local Cuisine & Dining</h2>
-                <div className="header-actions">
-                    {!meals && (
+            <div className="meals-header" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '15px' }}>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2>Local Cuisine & Dining</h2>
+                </div>
+
+                <div className="dietary-preferences" style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+                    gap: '10px',
+                    background: 'rgba(0,0,0,0.03)',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    width: '100%',
+                    border: '1px solid #eee'
+                }}>
+                    <span style={{ gridColumn: '1 / -1', fontWeight: 'bold', fontSize: '1rem', marginBottom: '5px' }}>Dietary Preferences:</span>
+                    {dietaryOptions.map((option) => (
+                        <label key={option} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.95rem', cursor: 'pointer' }}>
+                            <input
+                                type="checkbox"
+                                value={option}
+                                checked={dietaryPreferences.includes(option)}
+                                onChange={handleDietaryChange}
+                                style={{ width: '16px', height: '16px' }}
+                            />
+                            {option}
+                        </label>
+                    ))}
+                </div>
+
+                <div className="header-actions" style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                    <div className="generation-controls" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {meals && (
+                            <button
+                                className="share-btn"
+                                onClick={copyToClipboard}
+                                title="Copy Food Guide"
+                                style={{ background: 'none', border: 'none', fontSize: '2rem', cursor: 'pointer', padding: '10px' }}
+                            >
+                                🗒
+                            </button>
+                        )}
                         <button
                             className="generate-btn"
                             onClick={handleGenerate}
                             disabled={isGenerating}
+                            style={{ fontSize: '1.2rem', padding: '12px 24px' }}
                         >
-                            {isGenerating ? 'Curating Menu...' : 'Generate Food Guide AI'}
+                            {isGenerating ? 'Curating Menu...' : (meals ? 'Regenerate Food Guide' : 'Generate Food Guide AI')}
                         </button>
-                    )}
-                    {meals && (
-                        <button
-                            className="share-btn"
-                            onClick={copyToClipboard}
-                            title="Copy Food Guide"
-                            style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}
-                        >
-                            🗒
-                        </button>
-                    )}
+                    </div>
                 </div>
             </div>
 

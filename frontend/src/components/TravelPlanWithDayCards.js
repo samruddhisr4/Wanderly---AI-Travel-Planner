@@ -64,6 +64,7 @@ const TravelPlanWithDayCards = ({
           transportation: day.transportation || day.transport || null,
           notes: day.notes || day.note || "",
           weather: day.weather || null,
+          destination: plan.tripOverview?.destination || plan.tripOverview?.fullDestination || "",
         };
 
         const handleGen = (componentType) => {

@@ -104,9 +104,22 @@ function App() {
       setTravelPlan(data.data);
 
       // Save travel plan if user is logged in
+      // Save travel plan if user is logged in
       if (user) {
         try {
-          await authService.saveTravelPlan(data.data);
+          const planToSave = {
+            destination: data.data.tripOverview.destination,
+            startDate: data.data.tripOverview.startDate,
+            endDate: data.data.tripOverview.endDate,
+            budget: data.data.tripOverview.budget || data.data.tripOverview.totalBudget,
+            tripType: data.data.tripOverview.travelType || "general",
+            travelStyle: data.data.tripOverview.travelStyle,
+            accommodation: data.data.accommodation?.name || "Not specified",
+            interests: [], // Add interests if available in formData or plan
+            planData: data.data
+          };
+
+          await authService.saveTravelPlan(planToSave);
           console.log("Travel plan saved automatically.");
         } catch (saveError) {
           console.error("Failed to auto-save travel plan:", saveError);
@@ -200,17 +213,23 @@ function App() {
       setTravelPlan(consolidatedPlan);
 
       // Save updated plan if user is logged in
+      // Save updated plan if user is logged in
       if (user) {
         try {
-          // We need to save the FULL consolidated plan, not just the component
-          // But the backend API for save might expect a specific structure.
-          // For now, let's try saving the consolidated plan as a new version or update
-          // Since we don't have the plan ID easily accessible here for update, 
-          // we might just be saving new copies or we need to implement update logic.
-          // For simplicity in this fix, we'll skip auto-saving component updates 
-          // to avoid duplicating plans excessively, or we can try to update if we had an ID.
-          // Let's safe the consolidated plan as a new entry for now to ensure persistence.
-          await authService.saveTravelPlan(consolidatedPlan);
+          const planToSave = {
+            destination: consolidatedPlan.tripOverview.destination || consolidatedPlan.tripOverview.fullDestination,
+            startDate: consolidatedPlan.tripOverview.startDate,
+            endDate: consolidatedPlan.tripOverview.endDate,
+            budget: consolidatedPlan.tripOverview.budget || consolidatedPlan.tripOverview.totalBudget,
+            tripType: consolidatedPlan.tripOverview.travelType || "general",
+            travelStyle: consolidatedPlan.tripOverview.travelStyle,
+            accommodation: consolidatedPlan.accommodation?.name || "Not specified",
+            interests: [],
+            planData: consolidatedPlan
+          };
+
+          await authService.saveTravelPlan(planToSave);
+          console.log("Updated travel plan saved automatically.");
         } catch (e) {
           console.error("Failed to save updated plan:", e);
         }
@@ -319,7 +338,17 @@ function App() {
                   onUpdatePlan={(updatedPlan) => {
                     setTravelPlan(updatedPlan);
                     if (user) {
-                      authService.saveTravelPlan(updatedPlan).catch(console.error);
+                      const planToSave = {
+                        destination: updatedPlan.tripOverview.destination,
+                        startDate: updatedPlan.tripOverview.startDate,
+                        endDate: updatedPlan.tripOverview.endDate,
+                        budget: updatedPlan.tripOverview.budget,
+                        tripType: updatedPlan.tripOverview.travelType || "general",
+                        travelStyle: updatedPlan.tripOverview.travelStyle,
+                        accommodation: updatedPlan.accommodation?.name || "Not specified",
+                        planData: updatedPlan
+                      };
+                      authService.saveTravelPlan(planToSave).catch(console.error);
                     }
                   }}
                 />
@@ -347,7 +376,17 @@ function App() {
                     onUpdatePlan={(updatedPlan) => {
                       setTravelPlan(updatedPlan);
                       if (user) {
-                        authService.saveTravelPlan(updatedPlan).catch(console.error);
+                        const planToSave = {
+                          destination: updatedPlan.tripOverview.destination,
+                          startDate: updatedPlan.tripOverview.startDate,
+                          endDate: updatedPlan.tripOverview.endDate,
+                          budget: updatedPlan.tripOverview.budget,
+                          tripType: updatedPlan.tripOverview.travelType || "general",
+                          travelStyle: updatedPlan.tripOverview.travelStyle,
+                          accommodation: updatedPlan.accommodation?.name || "Not specified",
+                          planData: updatedPlan
+                        };
+                        authService.saveTravelPlan(planToSave).catch(console.error);
                       }
                     }}
                   />

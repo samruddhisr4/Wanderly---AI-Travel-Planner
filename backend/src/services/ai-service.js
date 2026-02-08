@@ -45,6 +45,13 @@ class AIService {
     this.validConstraints = [
       "no flights",
       "vegetarian",
+      "non-vegetarian",
+      "vegan",
+      "halal",
+      "kosher",
+      "gluten-free",
+      "nut allergy",
+      "lactose intolerant",
       "wheelchair accessible",
       "pet friendly",
       "budget accommodation",
@@ -1485,12 +1492,13 @@ class AIService {
     - Include realistic pricing in ₹ per person.
     - Specify cuisine type and specialties.
     - Highlight "Local Specialties" explicitly.
-    - Respect these constraints if provided: \${constraints.join(', ')}.
-    - Destination name should be preserved as '\${destination}' (maintain original casing).
+    - Respect these constraints: ${constraints.join(', ')}.
+    - Destination name should be preserved as '${destination}' (maintain original casing).
+    - IMPORTANT: Ensure all restaurants are REAL, EXIST, and are open.
 
-    Generate detailed meal options for \${destination} with a budget of ₹\${budget} (\${budgetTier} tier).
+    Generate detailed meal options for ${destination} with a budget of ₹${budget} (${budgetTier} tier).
 
-    For each restaurant, provide a "searchQuery" field that can be used to find it on Google Maps (e.g., "Restaurant Name City").
+    For each restaurant, provide a "searchQuery" field that is optimized for Google Maps search (e.g., "Restaurant Name ${destination}").
 
     JSON format:
     {
@@ -1505,12 +1513,32 @@ class AIService {
             "priceRange": "₹[min]-[max]",
             "description": "[Vibe/Atmosphere]",
             "specialties": ["Dish 1", "Dish 2"],
-            "searchQuery": "[Restaurant Name] [City] [Area]",
+            "searchQuery": "[Restaurant Name] ${destination}",
             "dietaryTags": ["Vegetarian", "Vegan", etc. based on constraints]
           }
         ],
-        "lunch": [],
-        "dinner": []
+        "lunch": [
+          {
+            "name": "[Restaurant Name]",
+            "cuisine": "[Cuisine]",
+            "priceRange": "₹[min]-[max]",
+            "description": "[Vibe/Atmosphere]",
+            "specialties": ["Dish 1", "Dish 2"],
+            "searchQuery": "[Restaurant Name] ${destination}",
+            "dietaryTags": ["Vegetarian", "Vegan", etc. based on constraints]
+          }
+        ],
+        "dinner": [
+          {
+            "name": "[Restaurant Name]",
+            "cuisine": "[Cuisine]",
+            "priceRange": "₹[min]-[max]",
+            "description": "[Vibe/Atmosphere]",
+            "specialties": ["Dish 1", "Dish 2"],
+            "searchQuery": "[Restaurant Name] ${destination}",
+            "dietaryTags": ["Vegetarian", "Vegan", etc. based on constraints]
+          }
+        ]
       }
     }
     `;
@@ -1549,13 +1577,14 @@ class AIService {
     Respond ONLY in valid JSON.
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
 
-    Generate accommodation options for ${destination} for ${duration} nights with budget of ${budget} INR.
+    Generate 10 varied accommodation options for ${destination} for ${duration} nights with budget of ${budget} INR.
     Stay budget: ₹${stayBudget} (approx ₹${avgStayPerNight}/night).
 
     CRITICAL RULES:
     - Ensure options fit the budget.
-    - Prioritize ${budgetTier} options.
-    - Provide valid "searchQuery" for booking platforms.
+    - Prioritize ${budgetTier} options but include a mix (Hotels, Hostels, Homestays).
+    - Provide valid "searchQuery" for booking platforms (Name + City).
+    - Ensure hotels are REAL and currently operating.
 
     JSON format:
     {
@@ -1569,7 +1598,7 @@ class AIService {
           "amenities": ["WiFi", "Pool", "Breakfast"],
           "location": "[Neighborhood]",
           "description": "[Brief description]",
-          "searchQuery": "[Hotel Name] [City] booking"
+          "searchQuery": "[Hotel Name] ${destination}"
         }
       ]
     }
@@ -1863,6 +1892,10 @@ class AIService {
         lunch: generateMealOptions("lunch"),
         dinner: generateMealOptions("dinner"),
       },
+      localSpecialties: [
+        { name: "Local Thali", description: "Assortment of regional dishes platter" },
+        { name: "Street Snacks", description: "Famous local street food delights" },
+      ],
       tripOverview: transformedInput,
     };
   }
