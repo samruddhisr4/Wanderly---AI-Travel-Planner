@@ -88,7 +88,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3005/api/travel/plan", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || "http://localhost:3005/api"}/travel/plan`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -145,7 +145,7 @@ function App() {
     setError(null);
 
     try {
-      const endpoint = `http://localhost:3005/api/travel/${componentType}`;
+      const endpoint = `${process.env.REACT_APP_API_URL || "http://localhost:3005/api"}/travel/${componentType}`;
       console.log("Making request to:", endpoint);
 
       const response = await fetch(endpoint, {
