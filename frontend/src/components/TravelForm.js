@@ -57,55 +57,7 @@ const TravelForm = ({
     onSubmit(processedData);
   };
 
-  const handleComponentGenerate = (componentType) => {
-    // Basic validation
-    if (
-      !formData.destination ||
-      !formData.startDate ||
-      !formData.endDate ||
-      !formData.budget
-    ) {
-      alert("Please fill in all required fields");
-      return;
-    }
 
-    if (new Date(formData.startDate) > new Date(formData.endDate)) {
-      alert("Start date must be before end date");
-      return;
-    }
-
-    if (formData.budget <= 0) {
-      alert("Budget must be a positive number");
-      return;
-    }
-
-    // Convert constraints to lowercase to match backend expectations
-    const processedData = {
-      ...formData,
-      constraints: [], // Send empty array as backend expects it
-    };
-
-    onComponentGenerate(componentType, processedData);
-  };
-
-  // Get button text with loading state
-  const getButtonText = (componentType) => {
-    if (loadingComponent === componentType) {
-      return `Generating ${componentType}...`;
-    }
-    switch (componentType) {
-      case "itinerary":
-        return "Generate Itinerary";
-      case "meals":
-        return "Generate Meal Options";
-      case "accommodation":
-        return "Generate Accommodation";
-      case "transport":
-        return "Generate Transport";
-      default:
-        return `Generate ${componentType}`;
-    }
-  };
 
   return (
     <form className="travel-form" onSubmit={handleSubmit}>

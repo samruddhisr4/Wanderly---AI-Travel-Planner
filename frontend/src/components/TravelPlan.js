@@ -19,10 +19,7 @@ const TravelPlan = ({ plan, onComponentGenerate, loadingComponent, user, onUpdat
   const {
     tripOverview,
     budgetBreakdown,
-    dailyItinerary,
     safetyNotes,
-    meals,
-    accommodation,
     transport,
   } = plan;
 
