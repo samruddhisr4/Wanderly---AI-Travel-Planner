@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './MealsPage.css';
 
 const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
-    const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all');
     const [dietaryPreferences, setDietaryPreferences] = useState([]);
 
@@ -20,7 +19,7 @@ const MealsPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
     if (!travelPlan) return <div className="meals-page">No plan available.</div>;
 
     const { meals, localSpecialties, tripOverview } = travelPlan;
-    const isGenerating = loadingComponent === 'meals' || loading;
+    const isGenerating = loadingComponent === 'meals';
 
     const handleDietaryChange = (e) => {
         const { value, checked } = e.target;

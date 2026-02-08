@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import './AccommodationPage.css';
 
 const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
-    const [loading, setLoading] = useState(false);
-
     if (!travelPlan) return <div className="accommodation-page">No plan available.</div>;
 
     const { accommodation, tripOverview } = travelPlan;
-    const isGenerating = loadingComponent === 'accommodation' || loading;
+    const isGenerating = loadingComponent === 'accommodation';
 
     const handleGenerate = () => {
         if (onComponentGenerate) {

@@ -13,24 +13,7 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
         byCategory: {},
     });
 
-    // Calculate estimated costs from itinerary on mount or plan change
-    useEffect(() => {
-        if (travelPlan) {
-            calculateEstimates(travelPlan);
-            if (travelPlan.expenses) {
-                setExpenses(travelPlan.expenses);
-            }
-        }
-    }, [travelPlan]);
-
-    const parseCost = (costStr) => {
-        if (!costStr) return 0;
-        // Remove currency symbols and non-numeric characters except dots
-        const cleanStr = costStr.replace(/[^\d.]/g, "");
-        return parseFloat(cleanStr) || 0;
-    };
-
-    const calculateEstimates = (plan) => {
+    const calculateEstimates = React.useCallback((plan) => {
         let total = 0;
         const byCategory = {
             transport: 0,
@@ -100,7 +83,17 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
         }
 
         setEstimatedCosts({ total, byCategory });
-    };
+    }, []);
+
+    // Calculate estimated costs from itinerary on mount or plan change
+    useEffect(() => {
+        if (travelPlan) {
+            calculateEstimates(travelPlan);
+            if (travelPlan.expenses) {
+                setExpenses(travelPlan.expenses);
+            }
+        }
+    }, [travelPlan, calculateEstimates]);
 
 
     const handleAddExpense = (e) => {
