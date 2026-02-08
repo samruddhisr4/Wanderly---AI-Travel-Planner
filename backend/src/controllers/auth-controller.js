@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
-const bcryptjs = require("bcryptjs");
-const dataStore = require("../data/inMemoryStore");
+const User = require("../models/User");
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-here";
 
@@ -25,8 +24,8 @@ class AuthController {
         });
       }
 
-      // Check if user already exists in memory
-      const existingUser = dataStore.findUserByEmail(email);
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -34,18 +33,14 @@ class AuthController {
         });
       }
 
-      // Create new user in memory
-      const newUser = {
-        _id: Date.now().toString(), // Simple ID generation
+      // Create new user
+      const newUser = new User({
         name,
         email,
-        password: bcryptjs.hashSync(password, 8), // Hash password synchronously
-        travelPlans: [],
-        createdAt: new Date(),
-        lastLogin: new Date(),
-      };
+        password, // Password hashing is handled in User model pre-save hook
+      });
 
-      dataStore.addUser(newUser);
+      await newUser.save();
 
       // Generate JWT token
       const token = jwt.sign(
@@ -60,6 +55,7 @@ class AuthController {
 
       // Update last login
       newUser.lastLogin = new Date();
+      await newUser.save();
 
       res.status(201).json({
         success: true,
@@ -93,8 +89,8 @@ class AuthController {
         });
       }
 
-      // Find user by email in memory
-      const user = dataStore.findUserByEmail(email);
+      // Find user by email
+      const user = await User.findOne({ email });
       if (!user) {
         return res.status(401).json({
           success: false,
@@ -103,7 +99,7 @@ class AuthController {
       }
 
       // Check password
-      const isPasswordValid = bcryptjs.compareSync(password, user.password);
+      const isPasswordValid = await user.comparePassword(password);
       if (!isPasswordValid) {
         return res.status(401).json({
           success: false,
@@ -124,6 +120,7 @@ class AuthController {
 
       // Update last login
       user.lastLogin = new Date();
+      await user.save();
 
       res.status(200).json({
         success: true,
@@ -147,7 +144,7 @@ class AuthController {
   // Get user profile
   async getProfile(req, res) {
     try {
-      const user = dataStore.findUserById(req.user.userId);
+      const user = await User.findById(req.user.userId).select("-password");
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -155,12 +152,9 @@ class AuthController {
         });
       }
 
-      // Return user without password
-      const { password, ...userWithoutPassword } = user;
-
       res.status(200).json({
         success: true,
-        user: userWithoutPassword,
+        user,
       });
     } catch (error) {
       console.error("Get profile error:", error);
@@ -173,3 +167,4 @@ class AuthController {
 }
 
 module.exports = new AuthController();
+

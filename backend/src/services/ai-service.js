@@ -118,7 +118,7 @@ class AIService {
     if (travelStyle && !Object.keys(this.travelStyles).includes(travelStyle)) {
       errors.push(
         "Invalid travel style. Valid options: " +
-          Object.keys(this.travelStyles).join(", ")
+        Object.keys(this.travelStyles).join(", ")
       );
     }
 
@@ -137,9 +137,9 @@ class AIService {
       if (invalidConstraints.length > 0) {
         errors.push(
           "Invalid constraints: " +
-            invalidConstraints.join(", ") +
-            ". Valid options: " +
-            this.validConstraints.join(", ")
+          invalidConstraints.join(", ") +
+          ". Valid options: " +
+          this.validConstraints.join(", ")
         );
       }
     }
@@ -287,9 +287,8 @@ class AIService {
     Object.keys(budgetBreakdown).forEach((category) => {
       const allocation = budgetBreakdown[category];
       const amount = Math.round((budget * allocation.percent) / 100);
-      prompt += `- ${category.toUpperCase()}: ₹${amount} (${
-        allocation.percent
-      }%) - ${allocation.description}\n`;
+      prompt += `- ${category.toUpperCase()}: ₹${amount} (${allocation.percent
+        }%) - ${allocation.description}\n`;
     });
 
     prompt += `\nCRITICAL RULES:\n`;
@@ -344,9 +343,19 @@ class AIService {
       prompt += `      "day": ${dayNum},\n`;
       prompt += `      "date": "${dateString}",\n`;
       prompt += `      "activities": [\n`;
-      prompt += `        "Morning: [Specific activity with timing]",\n`;
-      prompt += `        "Afternoon: [Specific activity with timing]",\n`;
-      prompt += `        "Evening: [Specific activity with timing]"\n`;
+      prompt += `        {\n`;
+      prompt += `          "time": "Morning",\n`;
+      prompt += `          "title": "[Activity Name]",\n`;
+      prompt += `          "description": "[Brief description]",\n`;
+      prompt += `          "location": "[Location/Address]",\n`;
+      prompt += `          "category": "[sightseeing/culture/nature/shopping/activity]",\n`;
+      prompt += `          "duration": "[e.g. 2 hours]",\n`;
+      prompt += `          "cost": 0,\n`;
+      prompt += `          "entryFee": 0,\n`;
+      prompt += `          "openingHours": "[e.g. 9 AM - 5 PM]"\n`;
+      prompt += `        },\n`;
+      prompt += `        { "time": "Afternoon", "title": "...", "description": "...", "category": "...", "cost": 0, "entryFee": 0, "openingHours": "..." },\n`;
+      prompt += `        { "time": "Evening", "title": "...", "description": "...", "category": "...", "cost": 0, "entryFee": 0, "openingHours": "..." }\n`;
       prompt += `      ],\n`;
       prompt += `      "meals": [\n`;
       prompt += `        "BREAKFAST: [1 specific restaurant/cafe name] - [Brief description and price range]",\n`;
@@ -465,9 +474,8 @@ class AIService {
     dates.forEach((date, index) => {
       const dayNum = index + 1;
       const dateString = date.toISOString().split("T")[0];
-      prompt += `{ "day": ${dayNum}, "date": "${dateString}", "activities": [ "Morning: [Specific activity]", "Afternoon: [Specific activity]", "Evening: [Specific activity]" ], "notes": "[Practical day-specific tips]" }${
-        index < duration - 1 ? "," : ""
-      }`;
+      prompt += `{ "day": ${dayNum}, "date": "${dateString}", "activities": [ { "time": "Morning", "title": "[Activity]", "description": "[Desc]", "category": "sightseeing", "openingHours": "[Hours]", "entryFee": 0 }, { "time": "Afternoon", "title": "[Activity]", "description": "[Desc]", "category": "activity", "openingHours": "[Hours]", "entryFee": 0 }, { "time": "Evening", "title": "[Activity]", "description": "[Desc]", "category": "culture", "openingHours": "[Hours]", "entryFee": 0 } ], "notes": "[Practical day-specific tips]" }${index < duration - 1 ? "," : ""
+        }`;
     });
 
     prompt += `]}`;
@@ -828,8 +836,7 @@ class AIService {
         errors.push(`Day ${i + 1} has no activities`);
       } else if (day.activities.length < styleConfig.activitiesPerDay) {
         errors.push(
-          `Day ${i + 1} has insufficient activities (${
-            day.activities.length
+          `Day ${i + 1} has insufficient activities (${day.activities.length
           } < ${styleConfig.activitiesPerDay})`
         );
       } else {
@@ -844,10 +851,8 @@ class AIService {
         errors.push(`Day ${i + 1} missing or invalid meals array`);
       } else if (day.meals.length !== 3) {
         errors.push(
-          `Day ${
-            i + 1
-          } must have exactly 3 meals (breakfast, lunch, dinner), got ${
-            day.meals.length
+          `Day ${i + 1
+          } must have exactly 3 meals (breakfast, lunch, dinner), got ${day.meals.length
           }`
         );
       }
@@ -891,8 +896,7 @@ class AIService {
         day.activities.length > styleConfig.activitiesPerDay * 2
       ) {
         errors.push(
-          `Day ${i + 1} has excessive activities (${day.activities.length} > ${
-            styleConfig.activitiesPerDay * 2
+          `Day ${i + 1} has excessive activities (${day.activities.length} > ${styleConfig.activitiesPerDay * 2
           })`
         );
       }
@@ -1002,48 +1006,39 @@ class AIService {
         if (budgetTier === "low") {
           switch (mealType) {
             case "breakfast":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Local café - Regional breakfast (₹100-200 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Local café - Regional breakfast (₹100-200 per person) (Searchable on Google Maps)`;
             case "lunch":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Street food area - Local cuisine (₹150-250 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Street food area - Local cuisine (₹150-250 per person) (Searchable on Google Maps)`;
             case "dinner":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Local restaurant - Regional dishes (₹200-350 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Local restaurant - Regional dishes (₹200-350 per person) (Searchable on Google Maps)`;
           }
         } else if (budgetTier === "medium") {
           switch (mealType) {
             case "breakfast":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Café in hotel/restaurant - Continental/Indian breakfast (₹200-350 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Café in hotel/restaurant - Continental/Indian breakfast (₹200-350 per person) (Searchable on Google Maps)`;
             case "lunch":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Mid-range restaurant - Regional cuisine (₹300-500 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Mid-range restaurant - Regional cuisine (₹300-500 per person) (Searchable on Google Maps)`;
             case "dinner":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Themed restaurant - Multi-cuisine (₹500-800 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Themed restaurant - Multi-cuisine (₹500-800 per person) (Searchable on Google Maps)`;
           }
         } else {
           // high budget
           switch (mealType) {
             case "breakfast":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Hotel restaurant - Gourmet breakfast (₹350-500 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Hotel restaurant - Gourmet breakfast (₹350-500 per person) (Searchable on Google Maps)`;
             case "lunch":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Fine dining restaurant - International cuisine (₹600-1000 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Fine dining restaurant - International cuisine (₹600-1000 per person) (Searchable on Google Maps)`;
             case "dinner":
-              return `${
-                mealType.charAt(0).toUpperCase() + mealType.slice(1)
-              }: Upscale restaurant - Signature dishes (₹1000-1500 per person) (Searchable on Google Maps)`;
+              return `${mealType.charAt(0).toUpperCase() + mealType.slice(1)
+                }: Upscale restaurant - Signature dishes (₹1000-1500 per person) (Searchable on Google Maps)`;
           }
         }
       };
@@ -1082,8 +1077,8 @@ class AIService {
           budgetTier === "low"
             ? "Budget hotels/guesthouses"
             : budgetTier === "medium"
-            ? "Mid-range hotels"
-            : "Comfortable hotels with amenities",
+              ? "Mid-range hotels"
+              : "Comfortable hotels with amenities",
       },
       food: {
         amount: Math.round(budget * 0.25),
@@ -1091,8 +1086,8 @@ class AIService {
           budgetTier === "low"
             ? "Street food and local eateries"
             : budgetTier === "medium"
-            ? "Mix of local and mid-range restaurants"
-            : "Fine dining and upscale restaurants",
+              ? "Mix of local and mid-range restaurants"
+              : "Fine dining and upscale restaurants",
       },
       transport: {
         amount: Math.round(budget * 0.15),
@@ -1812,58 +1807,58 @@ class AIService {
             mealType === "breakfast"
               ? "₹50-150"
               : mealType === "lunch"
-              ? "₹100-200"
-              : "₹150-250";
+                ? "₹100-200"
+                : "₹150-250";
           cuisine =
             mealType === "breakfast"
               ? "Local Breakfast"
               : mealType === "lunch"
-              ? "Street Food"
-              : "Regional Cuisine";
+                ? "Street Food"
+                : "Regional Cuisine";
           specialties =
             mealType === "breakfast"
               ? "Poha, Idli, Paratha"
               : mealType === "lunch"
-              ? "Biryani, Thali, Chaat"
-              : "Butter Chicken, Biryani, Local Specialties";
+                ? "Biryani, Thali, Chaat"
+                : "Butter Chicken, Biryani, Local Specialties";
         } else if (budgetTier === "medium") {
           priceRange =
             mealType === "breakfast"
               ? "₹150-300"
               : mealType === "lunch"
-              ? "₹200-400"
-              : "₹300-500";
+                ? "₹200-400"
+                : "₹300-500";
           cuisine =
             mealType === "breakfast"
               ? "Continental/Indian"
               : mealType === "lunch"
-              ? "Regional Specialties"
-              : "Multi-cuisine";
+                ? "Regional Specialties"
+                : "Multi-cuisine";
           specialties =
             mealType === "breakfast"
               ? "Pancakes, Omelets, Indian Breakfast"
               : mealType === "lunch"
-              ? "Thali, Biryani, Curries"
-              : "Specialty Dishes, Desserts";
+                ? "Thali, Biryani, Curries"
+                : "Specialty Dishes, Desserts";
         } else {
           priceRange =
             mealType === "breakfast"
               ? "₹300-500"
               : mealType === "lunch"
-              ? "₹400-700"
-              : "₹600-1000";
+                ? "₹400-700"
+                : "₹600-1000";
           cuisine =
             mealType === "breakfast"
               ? "Gourmet Breakfast"
               : mealType === "lunch"
-              ? "Fine Dining"
-              : "Upscale Multi-cuisine";
+                ? "Fine Dining"
+                : "Upscale Multi-cuisine";
           specialties =
             mealType === "breakfast"
               ? "Gourmet Items, Premium Coffee"
               : mealType === "lunch"
-              ? "Signature Dishes, Premium Ingredients"
-              : "Chef's Specialties, International Cuisine";
+                ? "Signature Dishes, Premium Ingredients"
+                : "Chef's Specialties, International Cuisine";
         }
 
         options.push({

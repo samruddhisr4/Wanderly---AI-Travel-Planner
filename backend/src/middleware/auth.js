@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const dataStore = require("../data/inMemoryStore");
+
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-here";
 
@@ -31,12 +31,12 @@ const authMiddleware = async (req, res, next) => {
     console.log("Current users in store:", dataStore.users);
 
     // For in-memory storage, just verify the token contains valid user data
-    // We'll verify if the user exists by checking against our in-memory store
-    const userExists = dataStore.findUserById(decoded.userId) !== undefined;
-    console.log("User exists:", userExists);
+    // Verify if the user exists in the database
+    const userExists = await require("../models/User").findById(decoded.userId);
+    console.log("User exists in DB:", !!userExists);
 
     if (!userExists) {
-      console.log("User not found in store");
+      console.log("User not found in database");
       return res.status(401).json({
         success: false,
         message: "Invalid token. User not found.",
@@ -54,5 +54,6 @@ const authMiddleware = async (req, res, next) => {
     });
   }
 };
+
 
 module.exports = authMiddleware;

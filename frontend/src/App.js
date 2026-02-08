@@ -3,7 +3,11 @@ import TravelForm from "./components/TravelForm";
 import TravelPlan from "./components/TravelPlan";
 import Navbar from "./components/Navbar";
 import AuthForm from "./components/AuthForm";
+import PreviousTrips from "./components/PreviousTrips";
+import BudgetPage from "./components/BudgetPage";
 import authService from "./services/authService";
+
+
 import { scrollToTop } from "./utils/scrollUtils";
 import "./App.css";
 
@@ -96,6 +100,16 @@ function App() {
 
       const data = await response.json();
       setTravelPlan(data.data);
+
+      // Save travel plan if user is logged in
+      if (user) {
+        try {
+          await authService.saveTravelPlan(data.data);
+          console.log("Travel plan saved automatically.");
+        } catch (saveError) {
+          console.error("Failed to auto-save travel plan:", saveError);
+        }
+      }
     } catch (err) {
       setError("Failed to generate itinerary. Please try again.");
       console.error("Error:", err);
@@ -182,6 +196,24 @@ function App() {
       }
 
       setTravelPlan(consolidatedPlan);
+
+      // Save updated plan if user is logged in
+      if (user) {
+        try {
+          // We need to save the FULL consolidated plan, not just the component
+          // But the backend API for save might expect a specific structure.
+          // For now, let's try saving the consolidated plan as a new version or update
+          // Since we don't have the plan ID easily accessible here for update, 
+          // we might just be saving new copies or we need to implement update logic.
+          // For simplicity in this fix, we'll skip auto-saving component updates 
+          // to avoid duplicating plans excessively, or we can try to update if we had an ID.
+          // Let's safe the consolidated plan as a new entry for now to ensure persistence.
+          await authService.saveTravelPlan(consolidatedPlan);
+        } catch (e) {
+          console.error("Failed to save updated plan:", e);
+        }
+      }
+
     } catch (err) {
       console.error("Error in generateComponent:", err);
       setError(`Failed to generate ${componentType}. Please try again.`);
@@ -191,13 +223,14 @@ function App() {
   };
 
   // Consolidate all generated components into a single plan for display
-  const consolidatedPlan = {
+  const consolidatedPlan = travelPlan ? {
     ...travelPlan,
-    ...generatedComponents.itinerary,
-    ...generatedComponents.meals,
-    ...generatedComponents.accommodation,
-    ...generatedComponents.transport,
-  };
+    ...(generatedComponents.itinerary || {}),
+    ...(generatedComponents.meals || {}),
+    ...(generatedComponents.accommodation || {}),
+    ...(generatedComponents.transport || {}),
+  } : null;
+
 
   if (showAuth) {
     return (
@@ -216,7 +249,12 @@ function App() {
         onLogin={handleLogin}
         onRegister={handleRegister}
         onLogout={handleLogout}
+        onSelectTrip={(planData) => {
+          setTravelPlan(planData);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
       />
+
       <div className="app-container">
         <header
           className="app-header"
@@ -276,6 +314,12 @@ function App() {
                     })
                   }
                   loadingComponent={loadingComponent}
+                  onUpdatePlan={(updatedPlan) => {
+                    setTravelPlan(updatedPlan);
+                    if (user) {
+                      authService.saveTravelPlan(updatedPlan).catch(console.error);
+                    }
+                  }}
                 />
               )}
             </>
@@ -285,54 +329,66 @@ function App() {
           {activeSection === "itinerary" && (
             <div>
               <h2>Travel Itinerary</h2>
+              {/* Show current plan if available */}
               {consolidatedPlan ? (
-                <TravelPlan
-                  plan={consolidatedPlan}
-                  onComponentGenerate={(componentType, extra) =>
-                    generateComponent(componentType, {
-                      ...(consolidatedPlan.tripOverview || {}),
-                      ...extra,
-                    })
-                  }
-                  loadingComponent={loadingComponent}
-                />
+                <div className="current-plan-section">
+                  <h3>Current Plan</h3>
+                  <TravelPlan
+                    plan={consolidatedPlan}
+                    onComponentGenerate={(componentType, extra) =>
+                      generateComponent(componentType, {
+                        ...(consolidatedPlan.tripOverview || {}),
+                        ...extra,
+                      })
+                    }
+                    loadingComponent={loadingComponent}
+                    onUpdatePlan={(updatedPlan) => {
+                      setTravelPlan(updatedPlan);
+                      if (user) {
+                        authService.saveTravelPlan(updatedPlan).catch(console.error);
+                      }
+                    }}
+                  />
+                </div>
               ) : (
-                <p>Please generate a travel plan first in the Home section.</p>
+                <div className="no-current-plan">
+                  <p>
+                    No active plan. Generate one on the Home page or view your
+                    history below.
+                  </p>
+                </div>
+              )}
+
+              {/* Show previous trips history */}
+              {user && (
+                <div className="history-section">
+                  <div className="section-divider"></div>
+                  <PreviousTrips
+                    onSelectTrip={(planData) => {
+                      setTravelPlan(planData);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  />
+                </div>
               )}
             </div>
           )}
 
+
           {/* Budget Section */}
           {activeSection === "budget" && (
-            <div>
-              <h2>Budget Overview</h2>
-              {consolidatedPlan && consolidatedPlan.budget ? (
-                <div>
-                  <p>Total Budget: {consolidatedPlan.budget.total}</p>
-                  <p>Daily Budget: {consolidatedPlan.budget.daily}</p>
-                  {consolidatedPlan.budget.breakdown && (
-                    <div>
-                      <h3>Budget Breakdown:</h3>
-                      <ul>
-                        {Object.entries(consolidatedPlan.budget.breakdown).map(
-                          ([category, amount]) => (
-                            <li key={category}>
-                              {category}: {amount}
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p>
-                  No budget information available. Please generate a travel plan
-                  first.
-                </p>
-              )}
-            </div>
+            <BudgetPage
+              travelPlan={consolidatedPlan}
+              onUpdatePlan={(updatedPlan) => {
+                setTravelPlan(updatedPlan);
+                // Also save to backend if user logged in
+                if (user) {
+                  authService.saveTravelPlan(updatedPlan).catch(console.error);
+                }
+              }}
+            />
           )}
+
 
           {/* Accommodation Section */}
           {activeSection === "accommodation" && (

@@ -1,4 +1,4 @@
-const dataStore = require("../data/inMemoryStore");
+const TravelPlan = require("../models/TravelPlan");
 
 class UserTravelController {
   // Save travel plan for authenticated user
@@ -30,8 +30,7 @@ class UserTravelController {
         });
       }
 
-      const newTravelPlan = {
-        _id: Date.now().toString(),
+      const newTravelPlan = new TravelPlan({
         userId,
         destination,
         startDate,
@@ -41,11 +40,9 @@ class UserTravelController {
         tripType,
         accommodation: accommodation || "Not specified",
         planData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      });
 
-      dataStore.addTravelPlan(newTravelPlan);
+      await newTravelPlan.save();
 
       res.status(201).json({
         success: true,
@@ -65,7 +62,9 @@ class UserTravelController {
   async getUserTravelPlans(req, res) {
     try {
       const userId = req.user.userId;
-      const userTravelPlans = dataStore.findUserTravelPlans(userId);
+      const userTravelPlans = await TravelPlan.find({ userId }).sort({
+        createdAt: -1,
+      });
 
       res.status(200).json({
         success: true,
@@ -87,7 +86,8 @@ class UserTravelController {
       const { planData } = req.body;
       const userId = req.user.userId;
 
-      const travelPlan = dataStore.findTravelPlanByIdAndUserId(planId, userId);
+      const travelPlan = await TravelPlan.findOne({ _id: planId, userId });
+
       if (!travelPlan) {
         return res.status(404).json({
           success: false,
@@ -98,7 +98,7 @@ class UserTravelController {
       if (planData) {
         travelPlan.planData = planData;
         travelPlan.updatedAt = new Date();
-        dataStore.updateTravelPlan(planId, travelPlan);
+        await travelPlan.save();
       }
 
       res.status(200).json({
@@ -121,8 +121,12 @@ class UserTravelController {
       const { planId } = req.params;
       const userId = req.user.userId;
 
-      const deletedPlan = dataStore.deleteTravelPlan(planId);
-      if (!deletedPlan || deletedPlan.userId !== userId) {
+      const deletedPlan = await TravelPlan.findOneAndDelete({
+        _id: planId,
+        userId,
+      });
+
+      if (!deletedPlan) {
         return res.status(404).json({
           success: false,
           message: "Travel plan not found",
@@ -144,3 +148,4 @@ class UserTravelController {
 }
 
 module.exports = new UserTravelController();
+

@@ -29,15 +29,12 @@ const { PORT, CORS_OPTIONS } = require("./src/config/server-config");
 // Initialize Express app
 const app = express();
 
-// Database connection with graceful fallback
-if (process.env.MONGODB_URI) {
-  mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => console.log("MongoDB connected successfully"))
-    .catch((err) => console.error("MongoDB connection error:", err));
-} else {
-  console.log("MongoDB URI not provided, using in-memory storage");
-}
+// Database connection
+mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/wanderly_travel_planner")
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
 
 // Middleware
 app.use(cors(CORS_OPTIONS));

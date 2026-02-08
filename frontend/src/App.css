@@ -8,9 +8,10 @@
   background-attachment: fixed;
   padding: 2px;
   box-sizing: border-box;
-  text-emphasis-color: black;
-  /* padding-top: 100px; */
+  /* text-emphasis-color: black; */
+  padding-top: 100px;
 }
+
 
 .app-header {
   text-align: center;
@@ -59,7 +60,8 @@
 }
 
 .app-main {
-  max-width: 896px; /* max-w-4xl equivalent (896px) */
+  max-width: 896px;
+  /* max-w-4xl equivalent (896px) */
   margin: 0 auto;
   padding: 0 20px;
   background-color: white;
@@ -69,7 +71,8 @@
 
 /* Ensure the form has enough space for the button */
 .app-main .travel-form {
-  margin-bottom: 80px !important; /* Extra margin to ensure button is visible */
+  margin-bottom: 80px !important;
+  /* Extra margin to ensure button is visible */
 }
 
 /* Detailed meal display styles */
