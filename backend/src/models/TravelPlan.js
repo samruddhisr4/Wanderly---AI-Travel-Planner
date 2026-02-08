@@ -49,9 +49,9 @@ const travelPlanSchema = new mongoose.Schema({
 });
 
 // Update the updatedAt field before saving
-travelPlanSchema.pre("save", function (next) {
+// Update the updatedAt field before saving
+travelPlanSchema.pre("save", function () {
   this.updatedAt = Date.now();
-  next();
 });
 
 module.exports = mongoose.model("TravelPlan", travelPlanSchema);

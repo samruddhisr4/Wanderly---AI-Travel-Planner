@@ -8,6 +8,7 @@ class AuthController {
   async register(req, res) {
     try {
       const { name, email, password } = req.body;
+      console.log(`ATTEMPTING REGISTRATION for: ${email}`);
 
       // Validate input
       if (!name || !email || !password) {
@@ -71,7 +72,7 @@ class AuthController {
       console.error("Registration error:", error);
       res.status(500).json({
         success: false,
-        message: "Internal server error during registration",
+        message: "Internal server error during registration: " + error.message,
       });
     }
   }

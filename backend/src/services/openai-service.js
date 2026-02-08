@@ -91,23 +91,28 @@ class OpenAIService {
 
   // Helper method to fix common JSON issues
   fixCommonJsonIssues(str) {
-    // Remove trailing commas before closing braces/brackets
-    str = str.replace(/,\s*([}\]])/g, "$1");
-
-    // Fix single quotes to double quotes
-    str = str.replace(/'/g, '"');
-
-    // Remove any text before the first {
+    // 1. Extract JSON part if mixed with text
     const firstBrace = str.indexOf("{");
-    if (firstBrace > 0) {
-      str = str.substring(firstBrace);
+    const lastBrace = str.lastIndexOf("}");
+
+    if (firstBrace >= 0 && lastBrace > firstBrace) {
+      str = str.substring(firstBrace, lastBrace + 1);
     }
 
-    // Remove any text after the last }
-    const lastBrace = str.lastIndexOf("}");
-    if (lastBrace < str.length - 1) {
-      str = str.substring(0, lastBrace + 1);
-    }
+    // 2. Remove comments (// or /* */) 
+    str = str.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
+
+    // 3. Fix trailing commas in objects and arrays
+    str = str.replace(/,(\s*[}\]])/g, '$1');
+
+    // 4. Fix single quotes to double quotes for keys and values
+    // This is tricky as we don't want to replace apostrophes in text
+    // Only replace single quotes that look like JSON delimiters
+    str = str.replace(/'([^']+)'\s*:/g, '"$1":'); // Keys
+    str = str.replace(/:\s*'([^']+)'/g, ': "$1"'); // Simple string values
+
+    // 5. Quote unquoted keys (e.g., key: "value" -> "key": "value")
+    str = str.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
 
     return str;
   }

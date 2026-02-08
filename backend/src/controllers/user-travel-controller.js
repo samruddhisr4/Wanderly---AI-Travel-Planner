@@ -51,9 +51,13 @@ class UserTravelController {
       });
     } catch (error) {
       console.error("Error saving travel plan:", error);
+      if (error.name === 'ValidationError') {
+        console.error("Validation Errors:", error.errors);
+      }
       res.status(500).json({
         success: false,
         message: "Failed to save travel plan",
+        error: error.message
       });
     }
   }

@@ -30,8 +30,13 @@ const { PORT, CORS_OPTIONS } = require("./src/config/server-config");
 const app = express();
 
 // Database connection
+// Database connection
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/wanderly_travel_planner";
+console.log("Attempting to connect to MongoDB...");
+console.log("URI (masked):", uri.replace(/:([^:@]+)@/, ':****@'));
+
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/wanderly_travel_planner")
+  .connect(uri)
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
 

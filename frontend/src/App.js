@@ -105,7 +105,9 @@ function App() {
 
       // Save travel plan if user is logged in
       // Save travel plan if user is logged in
+      // Save travel plan if user is logged in
       if (user) {
+        console.log("User is logged in, attempting to save plan...");
         try {
           const planToSave = {
             destination: data.data.tripOverview.destination,
@@ -119,11 +121,15 @@ function App() {
             planData: data.data
           };
 
-          await authService.saveTravelPlan(planToSave);
-          console.log("Travel plan saved automatically.");
+          const savedPlan = await authService.saveTravelPlan(planToSave);
+          console.log("Travel plan saved automatically:", savedPlan);
+          // Optional: Add a visual indicator or toast here
         } catch (saveError) {
           console.error("Failed to auto-save travel plan:", saveError);
         }
+      } else {
+        console.log("User is NOT logged in. Plan will not be saved.");
+        alert("Tip: Log in to save your travel plans and view them later!");
       }
     } catch (err) {
       setError("Failed to generate itinerary. Please try again.");
