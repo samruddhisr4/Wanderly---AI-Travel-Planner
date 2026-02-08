@@ -13,6 +13,13 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
         byCategory: {},
     });
 
+    const parseCost = (costStr) => {
+        if (!costStr) return 0;
+        // Remove currency symbols and non-numeric characters except dots
+        const cleanStr = costStr.replace(/[^\d.]/g, "");
+        return parseFloat(cleanStr) || 0;
+    };
+
     const calculateEstimates = React.useCallback((plan) => {
         let total = 0;
         const byCategory = {
