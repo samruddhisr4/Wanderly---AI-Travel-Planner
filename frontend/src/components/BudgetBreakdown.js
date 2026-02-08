@@ -104,7 +104,7 @@ const BudgetBreakdown = ({ budgetData, totalBudget }) => {
     {
       key: "activities",
       label: "Activities",
-      icon: "🎉",
+      icon: "🎫",
       color: colorPalette.ash_grey[500],
       lightColor: colorPalette.ash_grey[800],
       darkColor: colorPalette.ash_grey[300],
@@ -201,7 +201,7 @@ const BudgetBreakdown = ({ budgetData, totalBudget }) => {
             <span className="stat-value">
               {formatCurrency(
                 (budgetData.categories?.accommodation?.amount || 0) +
-                  (budgetData.categories?.food?.amount || 0),
+                (budgetData.categories?.food?.amount || 0),
               )}
             </span>
           </div>

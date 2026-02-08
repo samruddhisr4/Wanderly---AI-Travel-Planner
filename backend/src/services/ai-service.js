@@ -431,7 +431,13 @@ class AIService {
           throw new Error("Invalid response structure from AI");
         }
 
-        return aiResponse;
+        return {
+          ...aiResponse,
+          tripOverview: {
+            ...(aiResponse.tripOverview || {}),
+            ...transformedInput, // Ensure dates and other input fields are preserved
+          }
+        };
       } catch (apiError) {
         console.error("AI API Error:", apiError);
         // Fallback to template-based generation
@@ -582,6 +588,8 @@ class AIService {
     return {
       tripOverview: {
         destination: destination,
+        startDate: input.startDate,
+        endDate: input.endDate,
         duration: duration,
         travelStyle: travelStyle,
         travelType: input.travelType,
@@ -1117,6 +1125,8 @@ class AIService {
     return {
       tripOverview: {
         destination: fullDestination,
+        startDate: startDate,
+        endDate: endDate,
         duration: duration,
         travelStyle: travelStyle,
         travelType: travelType,
@@ -1219,7 +1229,13 @@ class AIService {
           console.log("Valid itinerary response found");
           return {
             dailyItinerary: aiResponse.dailyItinerary,
-            tripOverview: aiResponse.tripOverview || transformedInput,
+            tripOverview: {
+              ...(aiResponse.tripOverview || {}),
+              ...transformedInput, // Ensure we have all original input fields including dates
+              // Restore specific fields that AI might have overwritten if needed, or trust AI for some?
+              // Actually, transformedInput has the source of truth for dates/budget/etc.
+              // Let's ensure critical fields are from transformedInput to be safe.
+            },
           };
         } else {
           console.log("Invalid itinerary response, falling back to mock");
@@ -1273,6 +1289,7 @@ class AIService {
         if (aiResponse && aiResponse.meals) {
           return {
             meals: aiResponse.meals,
+            localSpecialties: aiResponse.localSpecialties,
             tripOverview: transformedInput,
           };
         } else {
@@ -1449,12 +1466,8 @@ class AIService {
   generateMealsPrompt(transformedInput) {
     const {
       fullDestination: destination,
-      startDate,
-      endDate,
-      duration,
       budget,
-      travelStyle,
-      travelType,
+      duration,
       constraints,
     } = transformedInput;
 
@@ -1466,43 +1479,38 @@ class AIService {
     You are an expert AI Travel Planning Assistant.
     Respond ONLY in valid JSON.
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
-    Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
-    Do NOT generate more than 1 meal option per meal type per day.
 
     QUALITY REQUIREMENTS:
-    - Provide exactly 10 restaurant options for EACH meal type (breakfast, lunch, dinner)
-    - Include realistic pricing in ₹ per person
-    - Specify cuisine type and specialties
-    - Include practical location information
-    - Destination name should be preserved as '${destination}' (maintain original casing)
+    - Provide exactly 5 distinct restaurant options for EACH meal type (breakfast, lunch, dinner).
+    - Include realistic pricing in ₹ per person.
+    - Specify cuisine type and specialties.
+    - Highlight "Local Specialties" explicitly.
+    - Respect these constraints if provided: \${constraints.join(', ')}.
+    - Destination name should be preserved as '\${destination}' (maintain original casing).
 
-    Generate detailed meal options for ${destination} for a ${duration}-day trip with budget of ${budget} INR (${budgetTier} budget tier).
+    Generate detailed meal options for \${destination} with a budget of ₹\${budget} (\${budgetTier} tier).
 
-    Provide 10 options for each meal type:
-    - Breakfast options with local specialties and café culture
-    - Lunch options with regional cuisine and quick service
-    - Dinner options with fine dining and local restaurants
-    - Include price ranges, cuisine types, specialties, and location hints
+    For each restaurant, provide a "searchQuery" field that can be used to find it on Google Maps (e.g., "Restaurant Name City").
 
     JSON format:
     {
+      "localSpecialties": [
+        { "name": "Dish Name", "description": "Brief description" }
+      ],
       "meals": {
         "breakfast": [
           {
-            "name": "[Specific restaurant/café name]",
-            "cuisine": "[Cuisine type]",
-            "priceRange": "₹[min]-[max] per person",
-            "specialties": "[Key dishes and specialties]",
-            "location": "[Area/neighborhood]",
-            "description": "[Brief description of atmosphere]"
+            "name": "[Restaurant Name]",
+            "cuisine": "[Cuisine]",
+            "priceRange": "₹[min]-[max]",
+            "description": "[Vibe/Atmosphere]",
+            "specialties": ["Dish 1", "Dish 2"],
+            "searchQuery": "[Restaurant Name] [City] [Area]",
+            "dietaryTags": ["Vegetarian", "Vegan", etc. based on constraints]
           }
         ],
-        "lunch": [
-          // 10 lunch options with same structure
-        ],
-        "dinner": [
-          // 10 dinner options with same structure
-        ]
+        "lunch": [],
+        "dinner": []
       }
     }
     `;
@@ -1511,32 +1519,19 @@ class AIService {
   generateAccommodationPrompt(transformedInput) {
     const {
       fullDestination: destination,
-      startDate,
-      endDate,
       duration,
       budget,
       travelStyle,
-      travelType,
-      constraints,
     } = transformedInput;
 
     // Calculate budget allocations
     const budgetBreakdown = {
       stay: { percent: 35, description: "Mid-range hotels/guesthouses" },
-      food: {
-        percent: 25,
-        description: "Mix of local restaurants and street food",
-      },
-      transport: { percent: 15, description: "Local transport and taxis" },
-      activities: { percent: 20, description: "Entry fees and guided tours" },
-      contingency: { percent: 5, description: "Emergency buffer" },
     };
 
-    // Adjust based on travel style
     if (travelStyle === "chill") {
       budgetBreakdown.stay.percent = 40;
     } else if (travelStyle === "fast-paced") {
-      budgetBreakdown.activities.percent = 25;
       budgetBreakdown.stay.percent = 30;
     }
 
@@ -1545,48 +1540,36 @@ class AIService {
     );
     const avgStayPerNight = Math.round(stayBudget / duration);
 
+    // Determine budget tier for accommodation
+    const budgetTier =
+      budget < 15000 ? "budget" : budget < 30000 ? "mid-range" : "luxury";
+
     return `
     You are an expert AI Travel Planning Assistant.
     Respond ONLY in valid JSON.
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
-    Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
-    Do NOT generate more than 1 meal option per meal type per day.
 
     Generate accommodation options for ${destination} for ${duration} nights with budget of ${budget} INR.
-
-    Budget allocation: Stay budget is ₹${stayBudget} for ${duration} nights (avg ₹${avgStayPerNight}/night).
+    Stay budget: ₹${stayBudget} (approx ₹${avgStayPerNight}/night).
 
     CRITICAL RULES:
-    - Accommodation options MUST fit within the accommodation budget of ₹${stayBudget} for ${duration} nights (avg ₹${avgStayPerNight}/night).
-    - If budget is low (under ₹15,000 total), prioritize hostels or budget hotels (₹500-1500/night).
-    - If budget is moderate (₹15,000-30,000 total), suggest mid-range hotels (₹1500-4000/night).
-    - NEVER suggest luxury hotels if total trip budget < ₹40,000.
-    - NEVER suggest accommodation that costs more than 25% of total budget per night.
-
-    QUALITY REQUIREMENTS:
-    - Provide exactly 10 accommodation options across different categories
-    - Include realistic pricing and amenities
-    - Specify exact locations/neighborhoods
-    - Include contact information format
-    - Destination name should be preserved as '${destination}' (maintain original casing)
-
-    Provide 10 accommodation options across these categories:
-    - Budget options (hostels, guesthouses) - 4 options
-    - Mid-range hotels - 4 options
-    - Luxury options (only if budget > ₹40,000) - 2 options
+    - Ensure options fit the budget.
+    - Prioritize ${budgetTier} options.
+    - Provide valid "searchQuery" for booking platforms.
 
     JSON format:
     {
       "accommodation": [
         {
-          "name": "[Specific hotel/guesthouse name]",
-          "category": "budget/mid-range/luxury",
-          "priceRange": "₹[min]-[max] per night",
-          "amenities": ["amenity1", "amenity2", "amenity3"],
-          "location": "[Specific area/neighborhood]",
-          "contact": "[Phone number format]",
-          "description": "[Brief description of property]",
-          "rating": "[Star rating if applicable]"
+          "name": "[Hotel Name]",
+          "type": "[Hotel/Hostel/Apartment]",
+          "pricePerNight": "₹[Amount]",
+          "totalPrice": "₹[Amount * duration]",
+          "rating": "[e.g. 4.5/5]",
+          "amenities": ["WiFi", "Pool", "Breakfast"],
+          "location": "[Neighborhood]",
+          "description": "[Brief description]",
+          "searchQuery": "[Hotel Name] [City] booking"
         }
       ]
     }
@@ -1613,21 +1596,21 @@ class AIService {
     Do NOT generate more than 1 meal option per meal type per day.
 
     QUALITY REQUIREMENTS:
-    - Provide comprehensive transport options with 10+ detailed options
-    - Include realistic pricing and availability information
-    - Specify exact service providers and booking methods
-    - Include practical tips for each transport mode
-    - Destination name should be preserved as '${destination}' (maintain original casing)
+    - Provide comprehensive transport options with 10 + detailed options
+      - Include realistic pricing and availability information
+        - Specify exact service providers and booking methods
+          - Include practical tips for each transport mode
+            - Destination name should be preserved as '${destination}' (maintain original casing)
 
-    Generate transportation options for ${destination} for a ${duration}-day trip.
+    Generate transportation options for ${destination} for a ${duration} - day trip.
 
     Include comprehensive information about:
-    - Local transportation options (10+ detailed options)
-    - App-based services with specific providers
-    - Airport/station transfers
-    - Estimated costs and travel times
-    - Booking methods and availability
-    - Practical travel tips
+    - Local transportation options(10 + detailed options)
+      - App - based services with specific providers
+        - Airport / station transfers
+          - Estimated costs and travel times
+            - Booking methods and availability
+              - Practical travel tips
 
     JSON format:
     {
@@ -1643,30 +1626,30 @@ class AIService {
             "tips": "[Practical usage tips]"
           }
         ],
-        "appServices": [
-          {
-            "name": "[App/company name]",
-            "description": "[Service details]",
-            "costEstimate": "₹[base fare] + ₹[per km] + ₹[per minute]",
-            "availability": "[Service area and hours]",
-            "bookingMethod": "[App download and booking process]",
-            "vehicleTypes": ["type1", "type2"]
-          }
-        ],
-        "airportTransfers": [
-          {
-            "name": "[Transfer service name]",
-            "type": "[Service type]",
-            "description": "[Details about service]",
-            "costRange": "₹[min]-[max]",
-            "bookingMethod": "[How to arrange]"
-          }
-        ],
-        "tips": [
-          "tip1",
-          "tip2",
-          "tip3"
-        ]
+          "appServices": [
+            {
+              "name": "[App/company name]",
+              "description": "[Service details]",
+              "costEstimate": "₹[base fare] + ₹[per km] + ₹[per minute]",
+              "availability": "[Service area and hours]",
+              "bookingMethod": "[App download and booking process]",
+              "vehicleTypes": ["type1", "type2"]
+            }
+          ],
+            "airportTransfers": [
+              {
+                "name": "[Transfer service name]",
+                "type": "[Service type]",
+                "description": "[Details about service]",
+                "costRange": "₹[min]-[max]",
+                "bookingMethod": "[How to arrange]"
+              }
+            ],
+              "tips": [
+                "tip1",
+                "tip2",
+                "tip3"
+              ]
       }
     }
     `;
@@ -1751,12 +1734,12 @@ class AIService {
       const dayActivities = [];
       for (let j = 0; j < 3; j++) {
         const activityIndex = (i * 3 + j) % activities.length;
-        dayActivities.push(`Morning: ${activities[activityIndex]}`);
+        dayActivities.push(`Morning: ${activities[activityIndex]} `);
         dayActivities.push(
-          `Afternoon: ${activities[(activityIndex + 1) % activities.length]}`
+          `Afternoon: ${activities[(activityIndex + 1) % activities.length]} `
         );
         dayActivities.push(
-          `Evening: ${activities[(activityIndex + 2) % activities.length]}`
+          `Evening: ${activities[(activityIndex + 2) % activities.length]} `
         );
         break; // Just take one set of morning/afternoon/evening activities per day
       }
@@ -1862,12 +1845,12 @@ class AIService {
         }
 
         options.push({
-          name: `${baseNames[i]} ${fullDestination}`,
+          name: `${baseNames[i]} ${fullDestination} `,
           cuisine: cuisine,
           priceRange: `${priceRange} per person`,
           specialties: specialties,
-          location: `Popular area in ${fullDestination}`,
-          description: `Well-known ${mealType} spot in ${fullDestination} offering authentic local cuisine`,
+          location: `Popular area in ${fullDestination} `,
+          description: `Well - known ${mealType} spot in ${fullDestination} offering authentic local cuisine`,
         });
       }
 
@@ -1898,17 +1881,17 @@ class AIService {
       // 4 budget options
       accommodations.push(
         {
-          name: `Budget Guesthouse ${fullDestination}`,
+          name: `Budget Guesthouse ${fullDestination} `,
           category: "budget",
           priceRange: "₹400-800 per night",
           amenities: ["Basic Wi-Fi", "Fan", "Shared Bathroom", "24/7 Security"],
-          location: `Central ${fullDestination}`,
+          location: `Central ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Affordable guesthouse in central ${fullDestination} with essential amenities`,
           rating: "3.2/5",
         },
         {
-          name: `Backpacker Hostel ${fullDestination}`,
+          name: `Backpacker Hostel ${fullDestination} `,
           category: "budget",
           priceRange: "₹300-600 per night",
           amenities: [
@@ -1917,27 +1900,27 @@ class AIService {
             "Common Areas",
             "Free Wi-Fi",
           ],
-          location: `Backpacker Area ${fullDestination}`,
+          location: `Backpacker Area ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
-          description: `Budget-friendly hostel perfect for solo travelers and backpackers`,
+          description: `Budget - friendly hostel perfect for solo travelers and backpackers`,
           rating: "3.5/5",
         },
         {
-          name: `Local Lodge ${fullDestination}`,
+          name: `Local Lodge ${fullDestination} `,
           category: "budget",
           priceRange: "₹500-900 per night",
           amenities: ["AC Rooms", "TV", "Attached Bathroom", "Room Service"],
-          location: `Residential Area ${fullDestination}`,
+          location: `Residential Area ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Simple but clean lodge with basic comforts`,
           rating: "3.0/5",
         },
         {
-          name: `Economy Hotel ${fullDestination}`,
+          name: `Economy Hotel ${fullDestination} `,
           category: "budget",
           priceRange: "₹600-1000 per night",
           amenities: ["Wi-Fi", "AC", "Restaurant", "24/7 Check-in"],
-          location: `Business District ${fullDestination}`,
+          location: `Business District ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Budget hotel with reliable service and central location`,
           rating: "3.4/5",
@@ -1947,7 +1930,7 @@ class AIService {
       // 4 mid-range options
       accommodations.push(
         {
-          name: `City Center Hotel ${fullDestination}`,
+          name: `City Center Hotel ${fullDestination} `,
           category: "mid-range",
           priceRange: "₹1200-2000 per night",
           amenities: [
@@ -1957,13 +1940,13 @@ class AIService {
             "Room Service",
             "24/7 Security",
           ],
-          location: `City Center ${fullDestination}`,
+          location: `City Center ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Comfortable hotel in the heart of the city with modern amenities`,
           rating: "4.0/5",
         },
         {
-          name: `Heritage Hotel ${fullDestination}`,
+          name: `Heritage Hotel ${fullDestination} `,
           category: "mid-range",
           priceRange: "₹1500-2500 per night",
           amenities: [
@@ -1973,13 +1956,13 @@ class AIService {
             "Swimming Pool",
             "Spa",
           ],
-          location: `Historic Area ${fullDestination}`,
+          location: `Historic Area ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Boutique hotel blending modern comfort with heritage architecture`,
           rating: "4.2/5",
         },
         {
-          name: `Business Hotel ${fullDestination}`,
+          name: `Business Hotel ${fullDestination} `,
           category: "mid-range",
           priceRange: "₹1800-3000 per night",
           amenities: [
@@ -1990,13 +1973,13 @@ class AIService {
             "Restaurant",
             "Conference Room",
           ],
-          location: `Business District ${fullDestination}`,
+          location: `Business District ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
           description: `Professional hotel with excellent facilities for business and leisure travelers`,
           rating: "4.1/5",
         },
         {
-          name: `Resort Style Hotel ${fullDestination}`,
+          name: `Resort Style Hotel ${fullDestination} `,
           category: "mid-range",
           priceRange: "₹2000-3500 per night",
           amenities: [
@@ -2007,9 +1990,9 @@ class AIService {
             "Restaurant",
             "Spa Services",
           ],
-          location: `Suburban Area ${fullDestination}`,
+          location: `Suburban Area ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
-          description: `Resort-like experience with comfortable rooms and recreational facilities`,
+          description: `Resort - like experience with comfortable rooms and recreational facilities`,
           rating: "4.3/5",
         }
       );
@@ -2019,7 +2002,7 @@ class AIService {
     if (budget > 40000) {
       accommodations.push(
         {
-          name: `Luxury Grand Hotel ${fullDestination}`,
+          name: `Luxury Grand Hotel ${fullDestination} `,
           category: "luxury",
           priceRange: "₹4000-7000 per night",
           amenities: [
@@ -2032,13 +2015,13 @@ class AIService {
             "Concierge",
             "Valet Parking",
           ],
-          location: `Prime Location ${fullDestination}`,
+          location: `Prime Location ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
-          description: `Premium luxury hotel with world-class facilities and exceptional service`,
+          description: `Premium luxury hotel with world - class facilities and exceptional service`,
           rating: "4.8/5",
         },
         {
-          name: `Premium Business Hotel ${fullDestination}`,
+          name: `Premium Business Hotel ${fullDestination} `,
           category: "luxury",
           priceRange: "₹5000-8000 per night",
           amenities: [
@@ -2051,9 +2034,9 @@ class AIService {
             "Fitness Center",
             "24/7 Room Service",
           ],
-          location: `Central Business District ${fullDestination}`,
+          location: `Central Business District ${fullDestination} `,
           contact: "+91-XXXXXXXXXX",
-          description: `Top-tier business hotel with luxurious accommodations and comprehensive amenities`,
+          description: `Top - tier business hotel with luxurious accommodations and comprehensive amenities`,
           rating: "4.7/5",
         }
       );

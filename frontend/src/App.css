@@ -60,8 +60,8 @@
 }
 
 .app-main {
-  max-width: 896px;
-  /* max-w-4xl equivalent (896px) */
+  max-width: 1100px;
+  /* max-w-4xl equivalent (896px) -> 1100px */
   margin: 0 auto;
   padding: 0 20px;
   background-color: white;

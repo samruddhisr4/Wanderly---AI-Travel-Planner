@@ -227,7 +227,8 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   /* softer shadow */
   text-align: left;
-  border: 1px solid black;
+  border: none;
+  /* border: 1px solid black; Removed to match home page single-border look */
   color: black;
   margin-bottom: 30px;
 }
@@ -286,16 +287,17 @@ body {
   padding: 25px;
   margin-bottom: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(143, 101, 147, 0.12);
-  border-left: 5px solid var(--vintage-lavender-500);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* Use explicit black style if not overridden by DayCard.css */
+  /* border-left: 5px solid var(--vintage-lavender-500);
   border-right: 2px solid var(--vintage-lavender-300);
-  border-top: 1px solid var(--vintage-lavender-700);
+  border-top: 1px solid var(--vintage-lavender-700); */
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .day-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(244, 213, 141, 0.25);
+  /* box-shadow: 0 6px 16px rgba(244, 213, 141, 0.25); */
 }
 
 .day-title {

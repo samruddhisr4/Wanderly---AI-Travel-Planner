@@ -18,18 +18,19 @@
 }
 
 .share-btn {
-    background-color: #3b82f6;
-    color: white;
+    background: none;
+    color: black;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 5px;
     cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s;
+    font-size: 1.5rem;
+    transition: transform 0.2s;
+    box-shadow: none !important;
 }
 
 .share-btn:hover {
-    background-color: #2563eb;
+    background: none;
+    transform: scale(1.1);
 }
 
 .budget-summary-cards {

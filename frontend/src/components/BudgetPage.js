@@ -181,8 +181,8 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
         <div className="budget-page-container">
             <div className="budget-header">
                 <h2>Travel Budget Tracker</h2>
-                <button className="share-btn" onClick={handleShare}>
-                    Share Summary 📤
+                <button className="share-btn" onClick={handleShare} title="Copy Budget Summary">
+                    🗒
                 </button>
             </div>
 

@@ -13,19 +13,7 @@ const TravelPlanWithDayCards = ({
 
   if (!dailyItinerary || dailyItinerary.length === 0) return null;
 
-  const handleActivityUpdate = (dayNumber, newActivities) => {
-    if (!onUpdatePlan) return;
 
-    const updatedItinerary = dailyItinerary.map(day => {
-      const currentDayNum = day.dayNumber || day.day;
-      if (currentDayNum === dayNumber) {
-        return { ...day, activities: newActivities };
-      }
-      return day;
-    });
-
-    onUpdatePlan({ ...plan, dailyItinerary: updatedItinerary });
-  };
 
   return (
     <div className="daily-itinerary-section" style={{ border: "none" }}>
@@ -95,7 +83,6 @@ const TravelPlanWithDayCards = ({
             onGenerateAccommodation={() => handleGen("accommodation")}
             onGenerateTransport={() => handleGen("transport")}
             loadingComponent={loadingComponent}
-            onUpdateActivities={handleActivityUpdate}
           />
         );
       })}

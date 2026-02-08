@@ -56,7 +56,7 @@ const Navbar = ({
                   onClick={() => setShowSettings(true)}
                   style={{ border: "none", background: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem", color: "white", fontSize: "1rem" }}
                 >
-                  <span style={{ fontSize: "1.2rem" }}>👤</span>
+
                   {user.name || user.email}
                 </button>
               </>

@@ -1,6 +1,7 @@
 import React from "react";
 import TravelPlanWithDayCards from "./TravelPlanWithDayCards";
 
+
 const TravelPlan = ({ plan, onComponentGenerate, loadingComponent, user, onUpdatePlan }) => {
   if (!plan) return null;
 
@@ -36,16 +37,21 @@ const TravelPlan = ({ plan, onComponentGenerate, loadingComponent, user, onUpdat
             </h2>
             <button
               onClick={handleShareItinerary}
+              title="Copy Full Itinerary"
               style={{
-                padding: '8px 16px',
-                backgroundColor: '#4f46e5',
-                color: 'white',
+                padding: '8px',
+                background: 'none',
+                color: 'black',
                 border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer'
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                boxShadow: 'none'
               }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.1)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
             >
-              Share Itinerary 📤
+              🗒
             </button>
           </div>
           <div className="trip-overview">

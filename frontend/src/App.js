@@ -5,6 +5,8 @@ import Navbar from "./components/Navbar";
 import AuthForm from "./components/AuthForm";
 import PreviousTrips from "./components/PreviousTrips";
 import BudgetPage from "./components/BudgetPage";
+import AccommodationPage from "./components/AccommodationPage";
+import MealsPage from "./components/MealsPage";
 import authService from "./services/authService";
 
 
@@ -392,69 +394,30 @@ function App() {
 
           {/* Accommodation Section */}
           {activeSection === "accommodation" && (
-            <div>
-              <h2>Accommodation Details</h2>
-              {consolidatedPlan && consolidatedPlan.accommodation ? (
-                <div>
-                  <p>
-                    Accommodation Type: {consolidatedPlan.accommodation.type}
-                  </p>
-                  <p>
-                    Preferences: {consolidatedPlan.accommodation.preferences}
-                  </p>
-                  {consolidatedPlan.dailyItinerary && (
-                    <div>
-                      <h3>Per-Day Accommodation:</h3>
-                      {consolidatedPlan.dailyItinerary.map((day, index) => (
-                        <div key={index}>
-                          <h4>Day {day.dayNumber || day.day || index + 1}</h4>
-                          {day.accommodation ? (
-                            <p>{day.accommodation}</p>
-                          ) : (
-                            <p>No accommodation specified for this day</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p>
-                  No accommodation information available. Please generate a
-                  travel plan first.
-                </p>
-              )}
-            </div>
+            <AccommodationPage
+              travelPlan={consolidatedPlan}
+              onComponentGenerate={(componentType, extra) =>
+                generateComponent(componentType, {
+                  ...(consolidatedPlan.tripOverview || {}),
+                  ...extra,
+                })
+              }
+              loadingComponent={loadingComponent}
+            />
           )}
 
           {/* Meals Section */}
           {activeSection === "meals" && (
-            <div>
-              <h2>Meal Suggestions</h2>
-              {consolidatedPlan && consolidatedPlan.dailyItinerary ? (
-                <div>
-                  {consolidatedPlan.dailyItinerary.map((day, index) => (
-                    <div key={index}>
-                      <h3>Day {day.dayNumber || day.day || index + 1} Meals</h3>
-                      {day.meals && day.meals.length > 0 ? (
-                        <ul>
-                          {day.meals.map((meal, mealIndex) => (
-                            <li key={mealIndex}>{meal}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <p>No meal suggestions for this day</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p>
-                  No meal information available. Please generate a travel plan
-                  first.
-                </p>
-              )}
-            </div>
+            <MealsPage
+              travelPlan={consolidatedPlan}
+              onComponentGenerate={(componentType, extra) =>
+                generateComponent(componentType, {
+                  ...(consolidatedPlan.tripOverview || {}),
+                  ...extra,
+                })
+              }
+              loadingComponent={loadingComponent}
+            />
           )}
         </main>
 
