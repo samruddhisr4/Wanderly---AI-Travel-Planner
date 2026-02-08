@@ -13,8 +13,8 @@ const TravelPlanWithDayCards = ({
   if (!dailyItinerary || dailyItinerary.length === 0) return null;
 
   return (
-    <div className="daily-itinerary-section">
-      <h3>Daily Itinerary</h3>
+    <div className="daily-itinerary-section" style={{ border: "none" }}>
+      <h3 style={{ border: "none" }}>Daily Itinerary</h3>
       {dailyItinerary.map((day, idx) => {
         // Transform the backend data structure to match frontend expectations
         const dayData = {

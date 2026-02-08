@@ -1416,7 +1416,7 @@ class AIService {
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
     Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
     Do NOT generate more than 1 meal option per meal type per day.
-    
+
     QUALITY REQUIREMENTS:
     - Each day must have exactly 3 activities (morning, afternoon, evening) based on ${travelStyle} pace.
     - Do NOT repeat the same activity across multiple days.
@@ -1424,15 +1424,15 @@ class AIService {
     - Avoid phrases like 'Explore local attractions and experience [destination] culture' (too generic).
     - Ensure travel times and activity timings do not overlap.
     - Destination name should be preserved as '${destination}' (maintain original casing).
-    
+
     Generate detailed daily itineraries for ${destination} from ${startDate} to ${endDate} (${duration} days) with ${travelStyle} travel style.
-    
+
     Focus only on daily activities with:
     - Morning, afternoon, and evening activities for each day
     - Specific attractions, timing, and duration
     - Brief descriptions and estimated costs where applicable
     - Local transportation between activities if needed
-    
+
     JSON format:
     {
       "dailyItinerary": [
@@ -1473,22 +1473,22 @@ class AIService {
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
     Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
     Do NOT generate more than 1 meal option per meal type per day.
-    
+
     QUALITY REQUIREMENTS:
     - Provide exactly 10 restaurant options for EACH meal type (breakfast, lunch, dinner)
     - Include realistic pricing in ₹ per person
     - Specify cuisine type and specialties
     - Include practical location information
     - Destination name should be preserved as '${destination}' (maintain original casing)
-    
+
     Generate detailed meal options for ${destination} for a ${duration}-day trip with budget of ${budget} INR (${budgetTier} budget tier).
-    
+
     Provide 10 options for each meal type:
     - Breakfast options with local specialties and café culture
     - Lunch options with regional cuisine and quick service
     - Dinner options with fine dining and local restaurants
     - Include price ranges, cuisine types, specialties, and location hints
-    
+
     JSON format:
     {
       "meals": {
@@ -1556,30 +1556,30 @@ class AIService {
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
     Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
     Do NOT generate more than 1 meal option per meal type per day.
-    
+
     Generate accommodation options for ${destination} for ${duration} nights with budget of ${budget} INR.
-    
+
     Budget allocation: Stay budget is ₹${stayBudget} for ${duration} nights (avg ₹${avgStayPerNight}/night).
-    
+
     CRITICAL RULES:
     - Accommodation options MUST fit within the accommodation budget of ₹${stayBudget} for ${duration} nights (avg ₹${avgStayPerNight}/night).
     - If budget is low (under ₹15,000 total), prioritize hostels or budget hotels (₹500-1500/night).
     - If budget is moderate (₹15,000-30,000 total), suggest mid-range hotels (₹1500-4000/night).
     - NEVER suggest luxury hotels if total trip budget < ₹40,000.
     - NEVER suggest accommodation that costs more than 25% of total budget per night.
-    
+
     QUALITY REQUIREMENTS:
     - Provide exactly 10 accommodation options across different categories
     - Include realistic pricing and amenities
     - Specify exact locations/neighborhoods
     - Include contact information format
     - Destination name should be preserved as '${destination}' (maintain original casing)
-    
+
     Provide 10 accommodation options across these categories:
     - Budget options (hostels, guesthouses) - 4 options
-    - Mid-range hotels - 4 options  
+    - Mid-range hotels - 4 options
     - Luxury options (only if budget > ₹40,000) - 2 options
-    
+
     JSON format:
     {
       "accommodation": [
@@ -1616,16 +1616,16 @@ class AIService {
     Do NOT include explanations, markdown, headings, or extra text outside JSON.
     Do NOT repeat global sections like meals or accommodation outside the defined JSON structure.
     Do NOT generate more than 1 meal option per meal type per day.
-    
+
     QUALITY REQUIREMENTS:
     - Provide comprehensive transport options with 10+ detailed options
     - Include realistic pricing and availability information
     - Specify exact service providers and booking methods
     - Include practical tips for each transport mode
     - Destination name should be preserved as '${destination}' (maintain original casing)
-    
+
     Generate transportation options for ${destination} for a ${duration}-day trip.
-    
+
     Include comprehensive information about:
     - Local transportation options (10+ detailed options)
     - App-based services with specific providers
@@ -1633,7 +1633,7 @@ class AIService {
     - Estimated costs and travel times
     - Booking methods and availability
     - Practical travel tips
-    
+
     JSON format:
     {
       "transport": {
@@ -1669,7 +1669,7 @@ class AIService {
         ],
         "tips": [
           "tip1",
-          "tip2", 
+          "tip2",
           "tip3"
         ]
       }

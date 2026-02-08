@@ -46,7 +46,7 @@ class OpenAIService {
 
       // Clean up the response
       completion = completion.trim();
-      
+
       // Parse JSON response
       try {
         const parsedResponse = JSON.parse(completion);

@@ -26,7 +26,7 @@ router.post("/openai-travel-test", async (req, res) => {
   try {
     const samplePrompt = `
     You are an AI Travel Planning Assistant. Generate a realistic, human-friendly travel plan for Jaipur, India for 3 days with a budget of 15000 INR. The traveler wants a balanced experience with mix of activities and relaxation.
-    
+
     Output format:
     {
       "tripOverview": {

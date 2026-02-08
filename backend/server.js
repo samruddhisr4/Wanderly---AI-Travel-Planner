@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 
 // Load environment variables from .env file
 dotenv.config({ path: __dirname + "/.env" });
@@ -19,12 +20,24 @@ console.log(
 // Import routes
 const travelRoutes = require("./src/routes/travel-routes");
 const testRoutes = require("./src/routes/test-routes");
+const authRoutes = require("./src/routes/auth-routes");
+const userTravelRoutes = require("./src/routes/user-travel-routes");
 
 // Import configuration
 const { PORT, CORS_OPTIONS } = require("./src/config/server-config");
 
 // Initialize Express app
 const app = express();
+
+// Database connection with graceful fallback
+if (process.env.MONGODB_URI) {
+  mongoose
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB connected successfully"))
+    .catch((err) => console.error("MongoDB connection error:", err));
+} else {
+  console.log("MongoDB URI not provided, using in-memory storage");
+}
 
 // Middleware
 app.use(cors(CORS_OPTIONS));
@@ -34,6 +47,8 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use("/api", travelRoutes);
 app.use("/api/test", testRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/travel", userTravelRoutes);
 
 // Health check route at root level
 app.get("/", (req, res) => {

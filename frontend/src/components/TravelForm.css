@@ -59,8 +59,8 @@
   font-weight: normal;
   margin: 0;
   line-height: 1.8;
-  flex: 1; 
-  align-self: center;  Ensure label is centered vertically 
+  flex: 1;
+  align-self: center;  Ensure label is centered vertically
   display: flex;
   align-items: center;
 } */
@@ -138,8 +138,8 @@
 
 /* .form-group select:focus {
   outline: none;
-  border-color: black; 
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1); 
+  border-color: black;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 } */
 
 /* Modular buttons section */

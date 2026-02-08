@@ -208,7 +208,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <>
       <Navbar
         activeSection={activeSection}
         setActiveSection={setActiveSection}
@@ -217,195 +217,202 @@ function App() {
         onRegister={handleRegister}
         onLogout={handleLogout}
       />
-
-      <header
-        className="app-header"
-        style={{ display: activeSection === "home" ? "block" : "none" }}
-      >
-        <div className="logo-section">
-          <h1
+      <div className="app-container">
+        <header
+          className="app-header"
+          style={{ display: activeSection === "home" ? "block" : "none" }}
+        >
+          <div className="logo-section">
+            <h1
+              style={{
+                fontFamily: "sans-serif",
+                fontSize: "3.5rem",
+                fontWeight: "bold",
+                color: "var(--neutral-text-primary)",
+                fontStyle: "cursive",
+                margin: "300",
+                padding: "100",
+              }}
+            >
+              Wanderly-AI Travel Planner
+            </h1>
+          </div>
+          <p
+            className="subtitle"
             style={{
               fontFamily: "sans-serif",
-              fontSize: "3.5rem",
-              fontWeight: "bold",
+              fontSize: "1.4rem",
               color: "var(--neutral-text-primary)",
-              fontStyle: "cursive",
             }}
           >
-            Wanderly-AI Travel Planner
-          </h1>
-        </div>
-        <p
-          className="subtitle"
-          style={{
-            fontFamily: "sans-serif",
-            fontSize: "1.4rem",
-            color: "var(--neutral-text-primary)",
-          }}
-        >
-          Plan your perfect trip with AI assistance
-        </p>
-      </header>
+            Plan your perfect trip with AI assistance
+          </p>
+        </header>
 
-      <main className="app-main">
-        {/* Home Section */}
-        {activeSection === "home" && (
-          <>
-            <TravelForm
-              onSubmit={generateTravelPlan}
-              onComponentGenerate={generateComponent}
-              loading={loading}
-              loadingComponent={loadingComponent}
-            />
-
-            {loading && (
-              <div className="loading">Generating your travel plan...</div>
-            )}
-
-            {error && <div className="error-message">{error}</div>}
-
-            {consolidatedPlan && (
-              <TravelPlan
-                plan={consolidatedPlan}
-                onComponentGenerate={(componentType, extra) =>
-                  generateComponent(componentType, {
-                    ...(consolidatedPlan.tripOverview || {}),
-                    ...extra,
-                  })
-                }
+        <main className="app-main">
+          {/* Home Section */}
+          {activeSection === "home" && (
+            <>
+              <TravelForm
+                onSubmit={generateTravelPlan}
+                onComponentGenerate={generateComponent}
+                loading={loading}
                 loadingComponent={loadingComponent}
               />
-            )}
-          </>
-        )}
 
-        {/* Itinerary Section */}
-        {activeSection === "itinerary" && (
-          <div>
-            <h2>Travel Itinerary</h2>
-            {consolidatedPlan ? (
-              <TravelPlan
-                plan={consolidatedPlan}
-                onComponentGenerate={(componentType, extra) =>
-                  generateComponent(componentType, {
-                    ...(consolidatedPlan.tripOverview || {}),
-                    ...extra,
-                  })
-                }
-                loadingComponent={loadingComponent}
-              />
-            ) : (
-              <p>Please generate a travel plan first in the Home section.</p>
-            )}
-          </div>
-        )}
+              {loading && (
+                <div className="loading">Generating your travel plan...</div>
+              )}
 
-        {/* Budget Section */}
-        {activeSection === "budget" && (
-          <div>
-            <h2>Budget Overview</h2>
-            {consolidatedPlan && consolidatedPlan.budget ? (
-              <div>
-                <p>Total Budget: {consolidatedPlan.budget.total}</p>
-                <p>Daily Budget: {consolidatedPlan.budget.daily}</p>
-                {consolidatedPlan.budget.breakdown && (
-                  <div>
-                    <h3>Budget Breakdown:</h3>
-                    <ul>
-                      {Object.entries(consolidatedPlan.budget.breakdown).map(
-                        ([category, amount]) => (
-                          <li key={category}>
-                            {category}: {amount}
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p>
-                No budget information available. Please generate a travel plan
-                first.
-              </p>
-            )}
-          </div>
-        )}
+              {error && <div className="error-message">{error}</div>}
 
-        {/* Accommodation Section */}
-        {activeSection === "accommodation" && (
-          <div>
-            <h2>Accommodation Details</h2>
-            {consolidatedPlan && consolidatedPlan.accommodation ? (
-              <div>
-                <p>Accommodation Type: {consolidatedPlan.accommodation.type}</p>
-                <p>Preferences: {consolidatedPlan.accommodation.preferences}</p>
-                {consolidatedPlan.dailyItinerary && (
-                  <div>
-                    <h3>Per-Day Accommodation:</h3>
-                    {consolidatedPlan.dailyItinerary.map((day, index) => (
-                      <div key={index}>
-                        <h4>Day {day.dayNumber || day.day || index + 1}</h4>
-                        {day.accommodation ? (
-                          <p>{day.accommodation}</p>
-                        ) : (
-                          <p>No accommodation specified for this day</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p>
-                No accommodation information available. Please generate a travel
-                plan first.
-              </p>
-            )}
-          </div>
-        )}
+              {consolidatedPlan && (
+                <TravelPlan
+                  plan={consolidatedPlan}
+                  onComponentGenerate={(componentType, extra) =>
+                    generateComponent(componentType, {
+                      ...(consolidatedPlan.tripOverview || {}),
+                      ...extra,
+                    })
+                  }
+                  loadingComponent={loadingComponent}
+                />
+              )}
+            </>
+          )}
 
-        {/* Meals Section */}
-        {activeSection === "meals" && (
-          <div>
-            <h2>Meal Suggestions</h2>
-            {consolidatedPlan && consolidatedPlan.dailyItinerary ? (
-              <div>
-                {consolidatedPlan.dailyItinerary.map((day, index) => (
-                  <div key={index}>
-                    <h3>Day {day.dayNumber || day.day || index + 1} Meals</h3>
-                    {day.meals && day.meals.length > 0 ? (
+          {/* Itinerary Section */}
+          {activeSection === "itinerary" && (
+            <div>
+              <h2>Travel Itinerary</h2>
+              {consolidatedPlan ? (
+                <TravelPlan
+                  plan={consolidatedPlan}
+                  onComponentGenerate={(componentType, extra) =>
+                    generateComponent(componentType, {
+                      ...(consolidatedPlan.tripOverview || {}),
+                      ...extra,
+                    })
+                  }
+                  loadingComponent={loadingComponent}
+                />
+              ) : (
+                <p>Please generate a travel plan first in the Home section.</p>
+              )}
+            </div>
+          )}
+
+          {/* Budget Section */}
+          {activeSection === "budget" && (
+            <div>
+              <h2>Budget Overview</h2>
+              {consolidatedPlan && consolidatedPlan.budget ? (
+                <div>
+                  <p>Total Budget: {consolidatedPlan.budget.total}</p>
+                  <p>Daily Budget: {consolidatedPlan.budget.daily}</p>
+                  {consolidatedPlan.budget.breakdown && (
+                    <div>
+                      <h3>Budget Breakdown:</h3>
                       <ul>
-                        {day.meals.map((meal, mealIndex) => (
-                          <li key={mealIndex}>{meal}</li>
-                        ))}
+                        {Object.entries(consolidatedPlan.budget.breakdown).map(
+                          ([category, amount]) => (
+                            <li key={category}>
+                              {category}: {amount}
+                            </li>
+                          )
+                        )}
                       </ul>
-                    ) : (
-                      <p>No meal suggestions for this day</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>
-                No meal information available. Please generate a travel plan
-                first.
-              </p>
-            )}
-          </div>
-        )}
-      </main>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p>
+                  No budget information available. Please generate a travel plan
+                  first.
+                </p>
+              )}
+            </div>
+          )}
 
-      {showBackToTop && (
-        <button
-          className="back-to-top-btn"
-          onClick={scrollToTop}
-          aria-label="Back to top"
-        >
-          ↑
-        </button>
-      )}
-    </div>
+          {/* Accommodation Section */}
+          {activeSection === "accommodation" && (
+            <div>
+              <h2>Accommodation Details</h2>
+              {consolidatedPlan && consolidatedPlan.accommodation ? (
+                <div>
+                  <p>
+                    Accommodation Type: {consolidatedPlan.accommodation.type}
+                  </p>
+                  <p>
+                    Preferences: {consolidatedPlan.accommodation.preferences}
+                  </p>
+                  {consolidatedPlan.dailyItinerary && (
+                    <div>
+                      <h3>Per-Day Accommodation:</h3>
+                      {consolidatedPlan.dailyItinerary.map((day, index) => (
+                        <div key={index}>
+                          <h4>Day {day.dayNumber || day.day || index + 1}</h4>
+                          {day.accommodation ? (
+                            <p>{day.accommodation}</p>
+                          ) : (
+                            <p>No accommodation specified for this day</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p>
+                  No accommodation information available. Please generate a
+                  travel plan first.
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Meals Section */}
+          {activeSection === "meals" && (
+            <div>
+              <h2>Meal Suggestions</h2>
+              {consolidatedPlan && consolidatedPlan.dailyItinerary ? (
+                <div>
+                  {consolidatedPlan.dailyItinerary.map((day, index) => (
+                    <div key={index}>
+                      <h3>Day {day.dayNumber || day.day || index + 1} Meals</h3>
+                      {day.meals && day.meals.length > 0 ? (
+                        <ul>
+                          {day.meals.map((meal, mealIndex) => (
+                            <li key={mealIndex}>{meal}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No meal suggestions for this day</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p>
+                  No meal information available. Please generate a travel plan
+                  first.
+                </p>
+              )}
+            </div>
+          )}
+        </main>
+
+        {showBackToTop && (
+          <button
+            className="back-to-top-btn"
+            onClick={scrollToTop}
+            aria-label="Back to top"
+          >
+            ↑
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 

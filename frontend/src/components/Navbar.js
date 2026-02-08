@@ -20,8 +20,9 @@ const Navbar = ({
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <span>✈️</span>
-        Wanderly
+        <a href="#home" className="navbar-logo-link">
+          Wanderly
+        </a>
       </div>
 
       <div className="navbar-nav">
@@ -58,12 +59,13 @@ const Navbar = ({
             <button className="settings-btn" onClick={onLogin}>
               Login
             </button>
-            <button className="settings-btn" onClick={onRegister}>
+            <button className="settings-btn register-btn" onClick={onRegister}>
               Register
             </button>
           </>
         )}
       </div>
+      {/* <span style={{ backgroundColor: "black", width: "100%" }}></span> */}
     </nav>
   );
 };

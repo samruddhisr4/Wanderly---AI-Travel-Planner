@@ -78,6 +78,12 @@ const AuthForm = ({ onAuthSuccess, initialMode = "login" }) => {
 
   return (
     <div className="auth-container">
+      <div className="auth-header">
+        <h1 className="auth-heading">
+        <pre>  <span className="auth-logo">Wanderly</span><span className="auth-title">-AI Travel Planner</span></pre>
+        </h1>
+      </div>
+      <hr />
       <div className="auth-form-wrapper">
         <h2>{isLogin ? "Login to Your Account" : "Create New Account"}</h2>
 

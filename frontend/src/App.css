@@ -6,15 +6,16 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  padding: 20px;
+  padding: 2px;
   box-sizing: border-box;
   text-emphasis-color: black;
+  /* padding-top: 100px; */
 }
 
 .app-header {
   text-align: center;
   margin-bottom: 30px;
-  padding: 20px 0;
+  /* padding: 20px 0; */
   /* border-bottom: 1px solid #e2e8f0;  */
   /* position: sticky; */
   top: 15px;

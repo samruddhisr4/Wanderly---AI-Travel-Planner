@@ -4,9 +4,8 @@
   padding: 25px;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border-left: 5px solid black;
-  border-right: 2px solid black;
-  border-top: 1px solid black;
+  border: 2px solid black;
+
 }
 
 /* Component button styles */
@@ -14,7 +13,7 @@
   background: black;
   color: white;
   padding: 12px 16px;
-  border: 2px solid black;
+  /* border: 2px solid black; */
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
@@ -35,7 +34,7 @@
   background: black;
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  border-color: black;
+  /* border-color: black; */
 }
 
 .component-btn:disabled {
@@ -49,7 +48,7 @@
 
 .day-card.selected {
   box-shadow: 0 6px 20px rgba(143, 101, 147, 0.18);
-  border: 2px solid var(--vintage-lavender-500);
+  /* border: 2px solid var(--vintage-lavender-500); */
   border-left: 5px solid var(--vintage-lavender-500);
 }
 
@@ -101,7 +100,7 @@
   border-radius: 20px;
   font-size: 0.9rem;
   color: var(--pearl-beige-600);
-  border: 1px solid var(--ash-grey-700);
+  /* border: 1px solid var(--ash-grey-700); */
 }
 
 .day-notes {
@@ -113,8 +112,8 @@
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 25px;
-  border-left: 4px solid var(--vintage-lavender-500);
-  border-right: 2px solid var(--vintage-lavender-400);
+  /* border-left: 4px solid var(--vintage-lavender-500); */
+  /* border-right: 2px solid var(--vintage-lavender-400); */
 }
 
 .day-notes p {
@@ -139,7 +138,7 @@
   color: var(--midnight-violet-500); /* replaced prussian-blue */
   font-size: 1.1rem;
   padding-bottom: 8px;
-  border-bottom: 2px solid var(--ash-grey-800); /* replaced deep-teal-800 */
+  /* border-bottom: 2px solid var(--ash-grey-800); replaced deep-teal-800 */
   font-weight: 600;
 }
 
@@ -220,7 +219,7 @@
   border-radius: 12px;
   font-size: 0.9rem;
   font-weight: 600;
-  border: 1px solid #a7f3d0; /* emerald-200 */
+  /* border: 1px solid #a7f3d0; emerald-200 */
 }
 
 .activity-content h5,
@@ -259,7 +258,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   margin-right: 8px;
-  border: 1px solid #fecaca; /* red-200 */
+  border: 1px solid black; /* red-200 */
 }
 
 /* Location link */
@@ -289,7 +288,7 @@
   background: #f8fafc; /* slate-50 */
   border-radius: 8px;
   padding: 20px;
-  border: 1px solid #e2e8f0; /* slate-200 */
+  /* border: 1px solid #e2e8f0; slate-200 */
 }
 
 .accommodation-header {
@@ -315,7 +314,7 @@
   border-radius: 15px;
   font-size: 0.9rem;
   font-weight: 500;
-  border: 1px solid #fde68a; /* amber-200 */
+  /* border: 1px solid #fde68a; amber-200 */
 }
 
 .accommodation-details p {
