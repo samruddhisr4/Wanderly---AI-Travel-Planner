@@ -9,6 +9,7 @@ import PreviousTrips from "./components/PreviousTrips";
 import BudgetPage from "./components/BudgetPage";
 import AccommodationPage from "./components/AccommodationPage";
 import MealsPage from "./components/MealsPage";
+import Footer from "./components/Footer";
 import authService from "./services/authService";
 
 
@@ -477,7 +478,9 @@ function App() {
             ↑
           </button>
         )}
+
       </div>
+      <Footer />
     </>
   );
 }
