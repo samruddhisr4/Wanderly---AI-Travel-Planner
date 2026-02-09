@@ -61,7 +61,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Debug endpoint to check DB connection
+// Debug endpoint to check DB connection - Trigger 2026-02-09
 app.get("/api/debug-db", async (req, res) => {
   try {
     const state = mongoose.connection.readyState;

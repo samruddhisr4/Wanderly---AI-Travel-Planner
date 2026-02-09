@@ -26,7 +26,7 @@ const Navbar = ({
       <nav className="navbar">
         <div className="navbar-logo">
           <a href="#home" className="navbar-logo-link">
-            Wanderly
+            <span style={{ fontFamily: "Cursive" }}>Wanderly</span>
           </a>
         </div>
 
