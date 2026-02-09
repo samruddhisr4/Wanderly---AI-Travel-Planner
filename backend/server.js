@@ -54,10 +54,12 @@ app.use("/api/travel", userTravelRoutes);
 
 // Health check route at root level
 app.get("/", (req, res) => {
+  console.log("Root route hit!");
   res.json({
-    message: "Travel Planner API is running",
+    message: "Travel Planner API is running - VERSION 2 (Debug)",
     status: "healthy",
     timestamp: new Date().toISOString(),
+    env: process.env.NODE_ENV
   });
 });
 
