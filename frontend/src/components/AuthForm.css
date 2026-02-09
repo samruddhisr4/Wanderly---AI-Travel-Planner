@@ -1,10 +1,10 @@
 .auth-container {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   min-height: 80vh;
-  padding:  0;
+  padding-top: 5vh;
   background-color: white;
   width: 100%;
 }
@@ -174,6 +174,7 @@
     font-size: 1.25rem;
   }
 }
+
 .auth-logo {
   font-family: sans-serif;
   font-size: 2.5rem;
