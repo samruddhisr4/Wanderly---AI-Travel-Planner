@@ -156,10 +156,12 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
 
     const handleShare = () => {
         const actualTotal = calculateActualTotal();
-        const balance = estimatedCosts.total - actualTotal;
+        const userBudget = parseFloat(travelPlan?.tripOverview?.budget) || 0;
+        const targetBudget = userBudget > 0 ? userBudget : estimatedCosts.total;
+        const balance = targetBudget - actualTotal;
 
         let summary = `Trip Budget Summary for ${travelPlan.destination}\n\n`;
-        summary += `Estimated Budget: ${formatCurrency(estimatedCosts.total)}\n`;
+        summary += `Budget Limit: ${formatCurrency(targetBudget)}\n`;
         summary += `Actual Spending: ${formatCurrency(actualTotal)}\n`;
         summary += `Remaining: ${formatCurrency(balance)}\n\n`;
 
@@ -174,8 +176,10 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
     };
 
     const actualTotal = calculateActualTotal();
-    const balance = estimatedCosts.total - actualTotal;
-    const progressPercent = Math.min((actualTotal / (estimatedCosts.total || 1)) * 100, 100);
+    const userBudget = parseFloat(travelPlan?.tripOverview?.budget) || 0;
+    const targetBudget = userBudget > 0 ? userBudget : estimatedCosts.total;
+    const balance = targetBudget - actualTotal;
+    const progressPercent = Math.min((actualTotal / (targetBudget || 1)) * 100, 100);
 
     return (
         <div className="budget-page-container">
@@ -188,11 +192,12 @@ const BudgetPage = ({ travelPlan, onUpdatePlan }) => {
 
             {/* Summary Cards */}
             <div className="budget-summary-cards">
-                <div className="summary-card estimated">
-                    <h3>Estimated Cost</h3>
-                    <p className="amount">{formatCurrency(estimatedCosts.total)}</p>
-                    <span className="subtitle">Based on Itinerary</span>
+                <div className="summary-card budget-limit">
+                    <h3>My Budget</h3>
+                    <p className="amount">{formatCurrency(parseFloat(travelPlan?.tripOverview?.budget) || 0)}</p>
+                    <span className="subtitle">Target Limit</span>
                 </div>
+
                 <div className="summary-card actual">
                     <h3>Actual Spend</h3>
                     <p className="amount">{formatCurrency(actualTotal)}</p>

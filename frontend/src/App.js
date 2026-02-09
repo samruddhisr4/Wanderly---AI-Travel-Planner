@@ -293,15 +293,15 @@ function App() {
             <h1
               style={{
                 fontFamily: "sans-serif",
-                fontSize: "3.5rem",
-                fontWeight: "bold",
+                fontSize: "2.5rem",
+                // fontWeight: "bold",
                 color: "var(--neutral-text-primary)",
                 fontStyle: "cursive",
                 margin: "300",
                 padding: "100",
               }}
             >
-              Wanderly-AI Travel Planner
+              <span style={{ paddingTop: "10px", fontFamily: "Broadway", color: "black", paddingBottom: "5px", fontSize: "3rem" }}>Wanderly </span><br />The AI Travel Planner
             </h1>
           </div>
           <p
