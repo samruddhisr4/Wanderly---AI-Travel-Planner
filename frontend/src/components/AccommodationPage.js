@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './AccommodationPage.css';
 
 const AccommodationPage = ({ travelPlan, onComponentGenerate, loadingComponent }) => {
