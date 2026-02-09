@@ -137,7 +137,8 @@ class AuthController {
       console.error("Login error:", error);
       res.status(500).json({
         success: false,
-        message: "Internal server error during login",
+        message: `Login failed: ${error.message}`,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
       });
     }
   }

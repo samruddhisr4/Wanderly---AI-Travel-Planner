@@ -61,6 +61,27 @@ app.get("/", (req, res) => {
   });
 });
 
+// Debug endpoint to check DB connection
+app.get("/api/debug-db", async (req, res) => {
+  try {
+    const state = mongoose.connection.readyState;
+    const states = {
+      0: "disconnected",
+      1: "connected",
+      2: "connecting",
+      3: "disconnecting",
+    };
+    res.json({
+      status: "ok",
+      dbState: states[state] || "unknown",
+      env: process.env.NODE_ENV,
+      mongoUriConfigured: !!process.env.MONGODB_URI,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
