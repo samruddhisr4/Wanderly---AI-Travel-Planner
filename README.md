@@ -2,6 +2,8 @@
 
 A full-stack travel planning application that generates realistic, human-friendly travel itineraries using AI-powered prompt engineering. Built with React frontend and Node.js/Express backend.
 
+**[Live Demo](https://wanderly-ai-travel-planner-chi.vercel.app/)**
+
 ## 🎯 Core Philosophy
 
 **AI Reasoning First**: We prioritize thoughtful travel planning over exhaustive completeness. Our AI focuses on:
